@@ -1,8 +1,8 @@
 # Gestion de mini réseaux sociaux MiniSocs
 
 Binôme :
-* Prénom1 NOM1
-* Prénom2 NOM2
+* Yesmine LAJMICHERIF
+* Sabrine AZAIEZ
 
 ## Syntaxe MarkDown
 
@@ -85,11 +85,43 @@ priorité HAUTE.
 - précondition : \
 ∧ pseudo bien formé (non null ∧ non vide) \
 ∧ le compte n'est pas bloqué \
+∧ le compte n'est pas désactivé \
 ∧ utilisateur avec ce pseudo existant
 - postcondition : le compte de l'utilisateur est désactivé
 
-NB : l'opération est idempotente.
+#### Ajouter membre (HAUTE)
+- précondition : \
+∧ pseudo bien formé (non null ∧ non vide) \
+∧ utilisateur(à ajouter) (existe ∧ le compte n'est pas bloqué ∧  le compte n'est pas désactivé ∧ n'est pas dans le réseau) \
+∧ L'ajout se fait par un modérateur ∧  l'ajout se fait dans un réseau social qui le modére 
+- postcondition : membre ajouté 
 
+#### Modérer les messages (HAUTE)
+
+- précondition : \
+∧ message en attente de modération \
+∧ l'utilisateur qui modére le message a les droits de modérations  ∧ compte actif ∧ compte n'est pas bloqué \
+- postcondition : \
+∧ Si le modérateur accepte le message il sera visible dans le réseau \
+∧ Sinon si le modérateur refuse le message, il aura le statut non accepté et reste non visible dans le réseau
+
+#### Poster Message (HAUTE)
+- précondition : \
+∧ Celui qui poste est (un membre du réseau ∧ a un compte actif ∧ a un compte non bloqué) \
+∧ Le post est (non null ∧ non vide) \
+∧ Postcondition : \
+∧ Si le membre est un modérateur le message est publié \
+∧ Si non le message est en attente de modération
+
+#### Créer réseau social (HAUTE)
+- précondition : \
+^ Le compte de l'utilisateur est (actif ∧ non bloqué) \
+∧ postcondition : \
+∧ Le réseau est créé
+∧ L'utilisateur avec droit de modération du réseau 
+
+
+NB : l'opération est idempotente.
 #### Autres cas d'utilisation et leur priorité respective
 
 - Retirer un utilisateur (basse)
@@ -97,6 +129,16 @@ NB : l'opération est idempotente.
 - Bloquer le compte d'un utilisateur (basse)
 
 - Lister les utilisateurs (moyenne)
+
+- Débloquer le compte d'un utilisateur (basse)
+
+- Promotion membre (moyenne) 
+
+- Cacher message (moyenne)
+
+- Configurer compte (basse)
+
+- Activer son compte (moyenne)
 
 ## 2. Préparation des tests de validation des cas d'utilisation
 
@@ -131,6 +173,50 @@ conditions.
 | le compte de l'utilisateur est désactivé | F | F | F | T |
 |                                          |   |   |   |   |
 | nombre de tests dans le jeu de tests     | 2 | 1 | 1 | 1 |
+
+#### Ajouter membre (HAUTE)
+|                                                     | 1 | 2 | 3 | 4 |
+|:----------------------------------------------------|:--|:--|:--|:--|
+| pseudo bien formé (non null ∧ non vide)              | F | T | T | T |
+| utilisateur(à ajouter) (existe ∧ le compte n'est pas bloqué ∧  le compte n'est pas désactivé ∧ n'est pas dans le réseau)             |   | F | T | T |
+| L'ajout se fait par ( un modérateur ∧ dans un réseau social qui le modere )            |   |   | F | T |
+| membre ajouté  |  F |  F |  F | T 
+nombre de tests dans le jeu de tests                | 2 | 4 | 2 | 1
+
+#### Modérer les messages (HAUTE)
+
+|                                          | 1 | 2 | 3 | 4 |
+|:-----------------------------------------|:--|:--|:--|:--|
+| message en attente de modération   | F | T | T | T |
+| l'utilisateur qui modére le message a les droits de modérations  ∧ compte active  ∧ compte n'est pas bloqué |   | F | T | T |
+| Si le modérateur accepte le message il sera visible dans le réseau      |  F |  F | F | T |
+|                                          |   |   |   |   |
+| Sinon si le modérateur refuse le message aura le statut non accepté et reste non visible dans le réseau | F | F | T | F  |
+|                                          |   |   |   |   |
+| nombre de tests dans le jeu de tests     | 1 | 3 | 1 | 1 |
+
+#### Poster Message (HAUTE)
+
+|                                          | 1 | 2 | 3 | 4 |
+|:-----------------------------------------|:--|:--|:--|:--|
+| Celui qui poste est (un membre du réseau ∧ a un compte actif ∧ a un compte non bloqué)    | F | T | T | T |
+| Le post est (non null ∧ non vide) |   | F | T | T |
+| Si le membre est un modérateur le message est publié    |  F |  F | F | T |
+|                                          |   |   |   |   |
+| Sinon le message est en attente de modération | F | F | T | F  |
+|                                          |   |   |   |   |
+| nombre de tests dans le jeu de tests     | 3 | 2 | 1 | 1 |
+
+#### Créer réseau social (HAUTE)
+
+
+|                                          | 1 | 2 |
+|:-----------------------------------------|:--|:--|
+| Le compte de l'utilisateur est (active ∧ non bloqué)    | F | T | 
+| Le réseau est créé | F  | T |
+| L'utilisateur avec droit de modération du réseau   |  F |  T | 
+|                                           |   |   |   |   |
+| nombre de tests dans le jeu de tests     | 2 | 1 | 
 
 # 3. Conception
 
