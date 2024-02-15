@@ -15,9 +15,9 @@ left to right direction
 'Déclaration des acteurs :'
 actor Administrateur
 actor Utilisateur
-Utilisateur <|-- Administrateur
 actor Membre
 actor Modérateur
+Modérateur <|-- Administrateur
 Utilisateur <|-- Membre
 Membre <|-- Modérateur
 

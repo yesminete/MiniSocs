@@ -41,7 +41,7 @@ Voici ci-dessous le diagramme de cas d'utilisation avec les cas
 d'utilisation les plus importants (code
 [source](./Diagrammes/minisocs_uml_diag_cas_utilisation.pu)).
 
-![diagrammecasutilisation](./Diagrammes/minisocs_uml_diag_cas_utilisation.svg)
+![diagrammecasutilisation](./Diagrammes/minisocs_uml_diag_cas_utilisation.png)
 
 ### 1.2. Priorités, préconditions et postconditions des cas d'utilisation
 
