@@ -13,7 +13,13 @@ skinparam class {
 
 'Classes, énumérations, etc.'
 class MiniSocs {
-  - nom: String
+  -NetworkId: Interger
+  -Nom: String
+  -Descrip: String
+  -IsOpen: Bool
+  -MembersList: List<Membre>
+  -ModérateurList: List<Modérateur>
+  -MessageList: List<Message>
 }
 class Utilisateur {
   - pseudonyme: String
@@ -22,14 +28,48 @@ class Utilisateur {
   - courriel: String
   - etatCompte: ÉtatCompte
 }
+class Membre{
+  
+}
+class Administrateur{
+  - AddUser(utilisateur: Utilisateur):void
+  - removeUser(userId:integer):void
+  -ListUsers():List<Utilisateur>
+  -BlockAccount(userId:Integer):void
+  -UnblockAccount(userId:Interger):void
+}
+class Modérateur {
+  -ModerateNetwork: List<MiniSocs>
+}
+
+class Message{
+  -messageId: Interger
+  -content: String
+  -Status:EtatMessage
+  -author: Member
+}
+
 enum ÉtatCompte <<enum>> {
   ACTIF
   DÉSACTIVÉ
   BLOQUÉ
 }
 
+enum EtatMembre <<enum>>{
+  EnAttente
+  Publié
+  Rejeté
+}
+
 'Associations, etc.'
 MiniSocs *--> "*" Utilisateur
+
+Administrateur--|> Utilisateur
+Membre --|> Utilisateur
+Modérateur --|> Utilisateur
+Membre --> MiniSocs
+Modérateur --> MiniSocs
+Message --> Membre
 
 'Au besoin, aides pour le positionnement'
 
