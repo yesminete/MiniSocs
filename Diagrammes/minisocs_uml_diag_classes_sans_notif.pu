@@ -17,36 +17,73 @@ class MiniSocs {
   -Nom: String
   -Descrip: String
   -IsOpen: Bool
-  -MembersList: List<Membre>
-  -ModérateurList: List<Modérateur>
-  -MessageList: List<Message>
+  -MembersList()
+  -ModérateurList()
+  -MessageList()
+  - Fermer()
+  -ModererMessage()
 }
+
+
 class Utilisateur {
-  - pseudonyme: String
+  - IdUtilisateur: Integer
   - nom: String
   - prénom: String
-  - courriel: String
-  - etatCompte: ÉtatCompte
+  - AdresseMail: String
+  -EtatCompte: ÉtatCompte
+  -Pseudonyme: String
+  -ActiverCompte()
+  -DesactiverCompte()
+  -ConfigurerCompte()
 }
+
+
 class Membre{
-  
+  -IdMembre:Integer
+  -Nom:String
+  -Prenom:String
+  -AdresseMail:String
+  - Pseudonyme:String
+  -PosterMessage()
+  -CacherMessage()
+  -DesactiverCompte()
+  -ConfiguerCompte()
 }
+
+
 class Administrateur{
-  - AddUser(utilisateur: Utilisateur):void
-  - removeUser(userId:integer):void
-  -ListUsers():List<Utilisateur>
-  -BlockAccount(userId:Integer):void
-  -UnblockAccount(userId:Interger):void
+  -IdAdmin:Integer
+  -Nom:String
+  -Prenom:String
+  -AdressMail:String
+  -listerUtilisateur()
+  -bloquerUtilisateur()
+  -débloquerUtilisateur()
+  -RetirerUtilisateur()
+  -AjouterUtilisateur()
+  -AjouterMembre()
+  -PromouvoirMembre()
 }
 class Modérateur {
-  -ModerateNetwork: List<MiniSocs>
+  -IdModérateur:Integer
+  -Nom:String
+  -Prénom:String
+  -AdressMail:String
+  -ModérerMessages()
+  -PosterMessage()
+  -CacherMessage()
+  -AjouterMembre()
+  -PromouvoirMembre()
 }
 
 class Message{
   -messageId: Interger
   -content: String
   -Status:EtatMessage
-  -author: Member
+  -authorID:Integer
+  -Publier()
+  -Cacher()
+  -ObtenierStatus()
 }
 
 enum ÉtatCompte <<enum>> {
@@ -67,9 +104,13 @@ MiniSocs *--> "*" Utilisateur
 Administrateur--|> Utilisateur
 Membre --|> Utilisateur
 Modérateur --|> Utilisateur
-Membre --> MiniSocs
+Administrateur --> Utilisateur
+Modérateur --> Membre
 Modérateur --> MiniSocs
-Message --> Membre
+Membre--> MiniSocs
+MiniSocs--> Message
+Utilisateur --> Message
+
 
 'Au besoin, aides pour le positionnement'
 
