@@ -1,0 +1,45 @@
+@startuml
+
+'Diagramme de séquence (PlantUML)'
+
+'Configuration charte graphique'
+hide footbox
+skinparam sequenceParticiantBackgroundColor White
+skinparam sequenceActorBackgroundColor White
+
+'Déclaration des acteurs et des participants'
+actor Membre
+participant Système
+database BaseDeDonnees
+participant Moderateur
+
+'Interaction principale'
+activate Membre
+Membre -> Système: posterMessage
+activate Système
+Système -> Membre: requestMessageContent
+activate Membre
+Membre -> Système: submitMessage
+
+alt isModerateur?
+    Système -> BaseDeDonnees: saveMessage (visible)
+    BaseDeDonnees --> Système: ConfirmationSaveMessage
+    Système --> Membre: notifyMessagePosted
+else 
+    Système -> BaseDeDonnees: saveMessage (pending)
+    BaseDeDonnees --> Système: ConfirmationSaveMessage
+    Système -> Moderateur: notifyModeratorReview
+    activate Moderateur
+    Moderateur --> Système: reviewAndApprove
+    alt approval 
+       Système -> BaseDeDonnees: updateMessageStatus (visible)
+       BaseDeDonnees --> Système: ConfirmationUpdateStatus
+       Système --> Membre: notifyMessagePosted
+    else 
+       Système -> BaseDeDonnees: updateMessageStatus (not accepted)
+       BaseDeDonnees --> Système: ConfirmationUpdateStatus
+    end
+end
+return
+
+@enduml
