@@ -80,10 +80,9 @@ class Message{
   -messageId: Interger
   -content: String
   -Status:EtatMessage
-  -authorID:Integer
-  -Publier()
-  -Cacher()
-  -ObtenierStatus()
+  -construire()
+  -modérer()
+  -cacher()
 }
 
 enum ÉtatCompte <<enum>> {

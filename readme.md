@@ -146,7 +146,7 @@ NB : l'opération est idempotente.
 
 |                                                     | 1 | 2 | 3 | 4 | 5 | 6 |
 |:----------------------------------------------------|:--|:--|:--|---|---|---|
-| pseudo bien formé (non null ∧ non vide)              | F | T | T | T | T | T |
+| pseudo bien formé (non null ∧ non vide)             | F | T | T | T | T | T |
 | nom bien formé  (non null ∧ non vide)               |   | F | T | T | T | T |
 | prénom bien formé  (non null ∧ non vide)            |   |   | F | T | T | T |
 | courriel bien formé (respectant le standard RFC822) |   |   |   | F | T | T |
@@ -166,7 +166,7 @@ conditions.
 
 |                                          | 1 | 2 | 3 | 4 |
 |:-----------------------------------------|:--|:--|:--|:--|
-| pseudo bien formé (non null ∧ non vide)   | F | T | T | T |
+| pseudo bien formé (non null ∧ non vide)  | F | T | T | T |
 | le compte n'est pas bloqué               |   | F | T | T |
 | utilisateur avec ce pseudo existant      |   |   | F | T |
 |                                          |   |   |   |   |
@@ -342,6 +342,54 @@ Voici tous les attributs de la classe :
 ∧ etatCompte != null
 ```
 
+## 7.2. Classe Message
+
+### 7.2.1. Diagramme de machine à états
+
+Diagramme ([source](./Diagrammes/minisocs_uml_diag_machine_a_etats_message.pu)).
+
+![diagrammemachineaétatsmessage](./Diagrammes/minisocs_uml_diag_machine_a_etats_message.svg)
+([source](./Diagrammes/minisocs_uml_diag_machine_a_etats_message.pu))
+
+### 7.2.2. Fiche de la classe:
+Voici tous les attributs de la classe:
+```
+-Integer messageId 
+
+-String content 
+
+-EtatMessage Status 
+
+-Membre author
+
+-Modérateur gestionneur
+ 
+```
+Voici toutes les opérations
+```
+void modérer()
+void construire()
+void cacher ()
+
+Autre Opérations qui ne figure pas dans le diagramme de classe
+```
+- getmessageId():Integer (public)
+    retourne l'id du message
+- getcontent():String (public)
+    retourne le contenu du message
+-getStatus(): String (public)
+    retourne le status du message
+
+### 7.2.3. Invariant
+```
+  id!= null ∧ id>0
+∧ content != null ∧ !content.isBlank()
+∧ status != null  ∧ (status = "En Attent" Or Status="Publié" Or Status="Rejeté"
+∧ author != null
+∧ gestionneur !=null
+```
+
+
 # 8 Préparation des tests unitaires
 
 ## 8.1. Opérations de la classe Utilisateur
@@ -381,6 +429,45 @@ enfin une chaîne de caractères qui n'est pas une adresse courriel.
 | nombre de tests dans le jeu de tests | 1   | 2   |
 
 Deux tests dans le jeu de tests 2 pour l'idempotence.
+
+## 8.2. Opérations de la classe 
+
+### Opération constructeur
+
+|                                              | 1   | 2   | 3   | 
+|:---------------------------------------------|:----|:----|:----|
+|messageId bien formé (non null ∧ >0 )         | F   | T   | T   | 
+|content bien formé (non null ∧ non vide)      |     | F   | T   |
+|                                              |     |     |     | 
+|                                              |     |     |     |
+|                                              |     |     |     |    
+| messageId' = messageId                       | F   | F   | F   | 
+| content' = content                           | F   | F   | F   | 
+| status' = en attente                         | F   | F   | F   | 
+|                                              |     |     |     |  
+| levée d'un exception                         | oui | oui | non |
+|                                              |     |     |     |    
+| nombre de tests dans le jeu de tests         | 2   | 2   | 1   |
+
+
+
+### Opération modérer
+
+### Opération désactiverCompte
+
+|                                      | 1   | 2   |
+|:-------------------------------------|:----|:----|
+| status = en attente                  | F   | T   |
+|                                      |     |     |
+| status' = publié | rejeté            |     | T   |
+|                                      |     |     |
+| levée d'une exception                | oui | non |
+|                                      |     |     |
+| nombre de tests dans le jeu de tests | 1   | 2   |
+
+
+
+
 
 ---
 FIN DU DOCUMENT
