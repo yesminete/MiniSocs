@@ -20,8 +20,6 @@ class MiniSocs {
   -MembersList()
   -ModérateurList()
   -MessageList()
-  - Fermer()
-  -ModererMessage()
 }
 
 
@@ -74,6 +72,8 @@ class Modérateur {
   -CacherMessage()
   -AjouterMembre()
   -PromouvoirMembre()
+  -FermerRéseauSocial()
+  
 }
 
 class Message{
@@ -99,17 +99,17 @@ enum EtatMembre <<enum>>{
 }
 
 'Associations, etc.'
-MiniSocs *--> "*" Utilisateur
 
-Administrateur--|> Utilisateur
-Membre --|> Utilisateur
-Modérateur --|> Utilisateur
-Administrateur --> Utilisateur
-Modérateur --> Membre
-Modérateur --> MiniSocs
-Membre--> MiniSocs
-MiniSocs--> Message
-Utilisateur --> Message
+Administrateur--|> Modérateur
+Administrateur-- Utilisateur
+Membre --|> Utilisateur 
+Modérateur --|> Membre
+Modérateur--Membre
+Modérateur--MiniSocs
+Membre-- Message
+Modérateur--Message
+Modérateur--MiniSocs
+MiniSocs*--"*" Message
 
 
 'Au besoin, aides pour le positionnement'
