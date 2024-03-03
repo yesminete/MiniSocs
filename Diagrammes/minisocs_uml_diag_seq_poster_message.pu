@@ -9,35 +9,35 @@ skinparam sequenceActorBackgroundColor White
 
 'Déclaration des acteurs et des participants'
 actor Membre
-participant Système
+participant MiniSocs
 database BaseDeDonnees
 participant Moderateur
 
 'Interaction principale'
 activate Membre
-Membre -> Système: posterMessage
-activate Système
-Système -> Membre: requestMessageContent
+Membre -> MiniSocs: posterMessage
+activate MiniSocs
+MiniSocs -> Membre: requestMessageContent
 activate Membre
-Membre -> Système: submitMessage
+Membre -> MiniSocs: submitMessage
 
 alt isModerateur?
-    Système -> BaseDeDonnees: saveMessage (visible)
-    BaseDeDonnees --> Système: ConfirmationSaveMessage
-    Système --> Membre: notifyMessagePosted
+    MiniSocs -> BaseDeDonnees: saveMessage (visible)
+    BaseDeDonnees --> MiniSocs: ConfirmationSaveMessage
+    MiniSocs --> Membre: notifyMessagePosted
 else 
-    Système -> BaseDeDonnees: saveMessage (pending)
-    BaseDeDonnees --> Système: ConfirmationSaveMessage
-    Système -> Moderateur: notifyModeratorReview
+    MiniSocs -> BaseDeDonnees: saveMessage (pending)
+    BaseDeDonnees --> MiniSocs: ConfirmationSaveMessage
+    MiniSocs -> Moderateur: notifyModeratorReview
     activate Moderateur
-    Moderateur --> Système: reviewAndApprove
+    Moderateur --> MiniSocs: reviewAndApprove
     alt approval 
-       Système -> BaseDeDonnees: updateMessageStatus (visible)
-       BaseDeDonnees --> Système: ConfirmationUpdateStatus
-       Système --> Membre: notifyMessagePosted
+       MiniSocs -> BaseDeDonnees: updateMessageStatus (visible)
+       BaseDeDonnees --> MiniSocs: ConfirmationUpdateStatus
+       MiniSocs --> Membre: notifyMessagePosted
     else 
-       Système -> BaseDeDonnees: updateMessageStatus (not accepted)
-       BaseDeDonnees --> Système: ConfirmationUpdateStatus
+       MiniSocs -> BaseDeDonnees: updateMessageStatus (not accepted)
+       BaseDeDonnees --> MiniSocs: ConfirmationUpdateStatus
     end
 end
 return

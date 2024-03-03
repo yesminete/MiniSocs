@@ -1,0 +1,34 @@
+@startuml
+
+'Diagramme de séquence (PLantUML)'
+
+'configuration charte graphique'
+hide footbox
+skinparam sequenceParticiantBackgroundColor White
+skinparam sequenceActorBachkgroundColor White
+
+'Déclaration des acteurs et des participants'
+actor Utilisateur
+participant MiniSocs
+database BaseDeDonnees
+
+
+activate Utilisateur
+Utilisateur -> MiniSocs: CréerRéseauSocial(nomRéseau, pseudonyme)
+activate MiniSocs
+MiniSocs -> BaseDeDonnees: EnregistrerRéseauSocial(nomRéseau, pseudonyme)
+activate BaseDeDonnees
+BaseDeDonnees --> MiniSocs: ConfirmationEnregistrement
+return
+MiniSocs --> Utilisateur: ConfirmationCréationRéseau
+return
+Utilisateur ->MiniSocs : AjouterModérateurRéseau(nonRéseau,modérateur)
+activate MiniSocs
+MiniSocs -> BaseDeDonnees: EnregistrerModérateurRéseau (nomRéseau,modérateur)
+activate BaseDeDonnees
+BaseDeDonnees --> MiniSocs: ConfirmationEnregistrementModérateur
+return
+MiniSocs --> Utilisateur: ConfirmationAjoutModérateur
+return
+
+@enduml

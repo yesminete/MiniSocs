@@ -1,0 +1,29 @@
+@startuml
+
+'Diagramme de machine à états (PlantUML)
+
+'Configuration charte graphique'
+
+'États et transitions'
+state EnCréation : entry: Créer()
+state Supprimé : entry: supprimer()
+
+[*] -right-> EnCréation
+EnCréation -right-> Brouillon
+state c <<choice>>
+Brouillon --> c
+c --> Publié :[IsModérateur]: Publier le message \n/Publier()
+c --> EnAttente :[IsMembre]: Message en attente d'etre approuvé per le modérateur \n/ Attendre()
+state a <<choice>>
+EnAttente --> a
+a --> Rejeté : Message rejeté par le modérateur\n/Rejeter()
+a --> Approuvé 
+Rejeté --> Supprimé
+Approuvé --> Publié
+Publié --> CachéByAuthor: Message peut etre cacher par son author \n/ Cacher()
+CachéByAuthor --> Supprimé
+
+Supprimé-left->[*]
+
+@enduml
+  
