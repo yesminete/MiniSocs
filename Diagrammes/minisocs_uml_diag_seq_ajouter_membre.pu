@@ -1,0 +1,34 @@
+@startuml
+
+'Configuration charte graphique'
+hide footbox
+skinparam sequenceParticipantBackgroundColor White
+skinparam sequenceActorBackgroundColor White
+
+actor "__m:Modérateur__" as mod
+participant "__MiniSocs__" as Mini
+participant "__R:RéseauSocial__" as RS
+
+mod -> Mini ++: ajouterMembre(pseudonyme, nomRéseauSocial)
+Mini -> Mini ++: R = chercherRéseauSocial(nomRéseauSocial): RéseauSocial
+return
+alt R!=null
+    Mini -> R ++ : test = estModerateur(m):Boolean
+    return
+    alt test==True
+    Mini -> Mini ++ : u = chercherUtilisateur(pseudonyme)
+    return
+    alt u!=null
+    	Mini ->RS ++: m = chercherMembre(u,R)
+   	 return
+    	 alt m==null 
+       	   create "__Membre__" as m
+       	   Mini -> m ++: CreateMembre(u, R)
+	   return
+	 end
+    end
+    end
+end
+return
+@enduml
+

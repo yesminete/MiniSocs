@@ -260,7 +260,7 @@ UML avec PlantUML est disponible à l'adress suivante :
 Version sans les notifications
 ([source](./Diagrammes/minisocs_uml_diag_classes_sans_notif.pu)).
 
-![diagrammeclasses](./Diagrammes/minisocs_uml_diag_classes_sans_notif.svg)
+![diagrammeclasses](./Diagrammes/minisocs_uml_diag_classes_sans_notif.png)
 ([source](./Diagrammes/minisocs_uml_diag_classes_sans_notif.pu))
 
 ## 3.4. Diagrammes de séquence
