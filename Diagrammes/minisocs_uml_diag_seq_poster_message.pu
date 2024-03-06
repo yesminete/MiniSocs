@@ -8,38 +8,35 @@ skinparam sequenceParticiantBackgroundColor White
 skinparam sequenceActorBackgroundColor White
 
 'Déclaration des acteurs et des participants'
-actor Membre
-participant Système
-database BaseDeDonnees
-participant Moderateur
-
+actor "__me:Membre__" as me
+participant "__:MiniSocs__" as sys
+actor "__:Moderateur__" as mo
+participant "__r:réseauSocial__" as r
 'Interaction principale'
-activate Membre
-Membre -> Système: posterMessage
-activate Système
-Système -> Membre: requestMessageContent
-activate Membre
-Membre -> Système: submitMessage
+activate me
+me -> sys: posterMessage(content)
+activate sys
 
-alt isModerateur?
-    Système -> BaseDeDonnees: saveMessage (visible)
-    BaseDeDonnees --> Système: ConfirmationSaveMessage
-    Système --> Membre: notifyMessagePosted
+alt content!=vide && estActif(me)
+    create "__:Message__" as mes
+    sys -> mes++: mes = createMessage(content,me,r)
+    return
+alt estModerateur(me)
+    sys -> r ++: ajouterMessage(mes)
+    return
+    sys --> me: notifyMessagePosted
 else 
-    Système -> BaseDeDonnees: saveMessage (pending)
-    BaseDeDonnees --> Système: ConfirmationSaveMessage
-    Système -> Moderateur: notifyModeratorReview
-    activate Moderateur
-    Moderateur --> Système: reviewAndApprove
-    alt approval 
-       Système -> BaseDeDonnees: updateMessageStatus (visible)
-       BaseDeDonnees --> Système: ConfirmationUpdateStatus
-       Système --> Membre: notifyMessagePosted
+    sys --> me: notifymessagePending
+    sys -> mo : demandeModération(mes)
+    alt message approuvé
+    mo -> sys: approuver(mes)
+    sys -> r ++: ajouterMessage(mes)
+    return
+    sys --> me: notifyMessagePosted
     else 
-       Système -> BaseDeDonnees: updateMessageStatus (not accepted)
-       BaseDeDonnees --> Système: ConfirmationUpdateStatus
+    mo -> sys: refuser(mes)
+    sys-->me : notifyMessageRejected
     end
-end
-return
-
+    end
+    end
 @enduml

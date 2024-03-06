@@ -12,7 +12,7 @@ skinparam class {
 }
 
 'Classes, énumérations, etc.'
-class MiniSocs {
+class RéseauSocial {
   -NetworkId: Interger
   -Nom: String
   -Descrip: String
@@ -82,10 +82,12 @@ class Message{
   -messageId: Interger
   -content: String
   -Status:EtatMessage
-  -authorID:Integer
-  -Publier()
-  -Cacher()
-  -ObtenierStatus()
+  -construire()
+  -modérer()
+  -cacher()
+}
+
+class MiniSoc{
 }
 
 enum ÉtatCompte <<enum>> {
@@ -103,15 +105,16 @@ enum EtatMembre <<enum>>{
 'Associations, etc.'
 
 Administrateur--|> Modérateur
-Administrateur-- Utilisateur
+Administrateur--> Utilisateur
+Administrateur-- MiniSoc
 Membre --|> Utilisateur 
 Modérateur --|> Membre
-Modérateur--Membre
-Modérateur--MiniSocs
+Modérateur-->Membre
+Modérateur-- RéseauSocial
+Membre -- RéseauSocial
 Membre-- Message
-Modérateur--Message
-Modérateur--MiniSocs
-MiniSocs*--"*" Message
+Modérateur-->Message
+RéseauSocial*--"*" Message
 
 
 'Au besoin, aides pour le positionnement'

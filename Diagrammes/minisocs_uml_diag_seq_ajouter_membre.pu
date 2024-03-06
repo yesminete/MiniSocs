@@ -13,13 +13,13 @@ mod -> Mini ++: ajouterMembre(pseudonyme, nomRéseauSocial)
 Mini -> Mini ++: R = chercherRéseauSocial(nomRéseauSocial): RéseauSocial
 return
 alt R!=null
-    Mini -> R ++ : test = estModerateur(m):Boolean
+    Mini -> RS ++ : test = estModerateur(m):Boolean
     return
     alt test==True
     Mini -> Mini ++ : u = chercherUtilisateur(pseudonyme)
     return
     alt u!=null
-    	Mini ->RS ++: m = chercherMembre(u,R)
+    	Mini -> RS ++: m = chercherMembre(u,R)
    	 return
     	 alt m==null 
        	   create "__Membre__" as m
