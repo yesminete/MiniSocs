@@ -24,65 +24,29 @@ class RéseauSocial {
 
 
 class Utilisateur {
-  - IdUtilisateur: Integer
-  - nom: String
-  - prénom: String
-  - AdresseMail: String
-  -EtatCompte: ÉtatCompte
-  -Pseudonyme: String
-  -ActiverCompte()
-  -DesactiverCompte()
-  -ConfigurerCompte()
-  -Créer()
-  -Joindre()
+  -idUtilisateur: Integer
+  -nom: String
+  -prénom: String
+  -adresseMail: String
+  -etatCompte: ÉtatCompte
+  -pseudonyme: String
+  -activerCompte()
+  -desactiverCompte()
+  -configurerCompte()
+  -créer()
 }
 
 
-class Membre{
-  -IdMembre:Integer
-  -Nom:String
-  -Prenom:String
-  -AdresseMail:String
-  - Pseudonyme:String
-  -PosterMessage()
-  -CacherMessage()
-  -DesactiverCompte()
-  -ConfiguerCompte()
-}
-
-
-class Administrateur{
-  -IdAdmin:Integer
-  -Nom:String
-  -Prenom:String
-  -AdressMail:String
-  -listerUtilisateur()
-  -bloquerUtilisateur()
-  -débloquerUtilisateur()
-  -RetirerUtilisateur()
-  -AjouterUtilisateur()
-  -AjouterMembre()
-  -PromouvoirMembre()
-}
-class Modérateur {
-  -IdModérateur:Integer
-  -Nom:String
-  -Prénom:String
-  -AdressMail:String
-  -ModérerMessages()
-  -PosterMessage()
-  -CacherMessage()
-  -AjouterMembre()
-  -PromouvoirMembre()
-  -FermerRéseauSocial()
-  
+class Abonnement{
+  -pseudonom : String
+  -statut : Statut
 }
 
 class Message{
   -messageId: Interger
-  -content: String
-  -Status:EtatMessage
-  -construire()
+  -contenu: String
+  -Statut: EtatMessage
+  -créer()
   -modérer()
   -cacher()
 }
@@ -96,25 +60,24 @@ enum ÉtatCompte <<enum>> {
   BLOQUÉ
 }
 
-enum EtatMembre <<enum>>{
+enum EtatMessage <<enum>>{
   EnAttente
   Publié
   Rejeté
 }
+enum Statut <<enum>>{
+  Modérateur
+  Membre
+}
 
 'Associations, etc.'
 
-Administrateur--|> Modérateur
-Administrateur--> Utilisateur
-Administrateur-- MiniSoc
-Membre --|> Utilisateur 
-Modérateur --|> Membre
-Modérateur-->Membre
-Modérateur-- RéseauSocial
-Membre -- RéseauSocial
-Membre-- Message
-Modérateur-->Message
-RéseauSocial*--"*" Message
+MiniSoc "1" --> "..*" Utilisateur : lister
+MiniSoc "1" --> "..*" RéseauSocial : lister
+Utilisateur "1"-->"..*" Abonnement : posséder
+Abonnement "1..*"--"1" RéseauSocial : associer à
+Abonnement "..*"--"1" Message
+RéseauSocial *--"..*" Message
 
 
 'Au besoin, aides pour le positionnement'

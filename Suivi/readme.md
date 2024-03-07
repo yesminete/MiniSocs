@@ -18,7 +18,7 @@ exposer votre point de vue.
 
 ### Diagrammes de cas d'utilisation
 
-[] DIAGUC-01-Cas-utilisation-manquant
+[x] DIAGUC-01-Cas-utilisation-manquant
 
 - Il manque un ou plusieurs cas d'utilisation qui vont vous
   manquer par la suite.
@@ -85,7 +85,7 @@ Vous devez mettre tous les cas d'utilisation dans le diagramme, pas seulement le
 - Une ou plusieurs classes et/ou associations montrent un erreur
   de compréhension de l'étude de cas.
 
-Je ne sais pas si vous comprenez la syntaxe et la sémantique du diagramme de classes - il y a beaucoup de problèmes - A VOIR  AVEC Paul
+Je ne sais pas si vous comprenez la syntaxe et la sémantique du diagramme de classes - il y a beaucoup de problèmes - A VOIR  AVEC Paul - 
 
 [] DIAGCLAS-14-Nom-classe
 
