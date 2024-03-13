@@ -80,14 +80,14 @@ Vous devez mettre tous les cas d'utilisation dans le diagramme, pas seulement le
 
 ### Diagramme de classes
 
-[] DIAGCLAS-02-Compréhension-étude-de-cas
+[x] DIAGCLAS-02-Compréhension-étude-de-cas
 
 - Une ou plusieurs classes et/ou associations montrent un erreur
   de compréhension de l'étude de cas.
 
 Je ne sais pas si vous comprenez la syntaxe et la sémantique du diagramme de classes - il y a beaucoup de problèmes - A VOIR  AVEC Paul - 
 
-[] DIAGCLAS-14-Nom-classe
+[x] DIAGCLAS-14-Nom-classe
 
 - Une ou plusieurs classes sont mal nommées : une majuscule au
   début, pas d'espace, un nom de classe qui contient « Acteur »
@@ -95,7 +95,7 @@ Je ne sais pas si vous comprenez la syntaxe et la sémantique du diagramme de cl
 
 EtatMembre devrait etre EtatMessage?
 
-- [] DIAGCLAS-13-Présence-acteur-dans-système
+- [x] DIAGCLAS-13-Présence-acteur-dans-système
   
   - Les acteurs n'ont pas tous vocation à être modélisés dans le
     système : par exemple, l'employé de la médiathèque n'est pas

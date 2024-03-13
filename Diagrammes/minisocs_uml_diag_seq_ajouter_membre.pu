@@ -5,28 +5,31 @@ hide footbox
 skinparam sequenceParticipantBackgroundColor White
 skinparam sequenceActorBackgroundColor White
 
-actor "__m:Modérateur__" as mod
-participant "__MiniSocs__" as Mini
-participant "__R:RéseauSocial__" as RS
-
-mod -> Mini ++: ajouterMembre(pseudonyme, nomRéseauSocial)
-Mini -> Mini ++: R = chercherRéseauSocial(nomRéseauSocial): RéseauSocial
+actor "__:utilisateur__" as m
+participant "__:MiniSocs__" as Mini
+participant "__r:RéseauSocial__" as RS
+participant "__m:Member__" as mod
+participant "__u:Utilisateur__" as u
+m -> Mini ++: ajouterMembre(pseudonymeModerateur, nomReseauSocial,pseudonymeUtilisateur,pseudonymeMembre)
+Mini -> Mini ++: r = chercherReseauSocial(nomReseauSocial): ReseauSocial
 return
-alt R!=null
-    Mini -> RS ++ : test = estModerateur(m):Boolean
+Mini -> Mini ++: m = chercherMembre(pseudonymeModerateur): Membre
+return
+Mini -> Mini ++ : u = chercherUtilisateur(pseudonymeUtilisateur) : Utilisateur
+return
+Mini -> Mini ++ : nm = chercherMembre(pseudonymeMembre) : Membre
+return
+opt r!=null && m!= null && u!=null && nm==null
+    Mini -> mod ++ : test = getEstModerateur(m):Boolean
     return
-    alt test==True
-    Mini -> Mini ++ : u = chercherUtilisateur(pseudonyme)
+    Mini -> u ++ : etat = getEtat()
     return
-    alt u!=null
-    	Mini -> RS ++: m = chercherMembre(u,R)
-   	 return
-    	 alt m==null 
-       	   create "__Membre__" as m
-       	   Mini -> m ++: CreateMembre(u, R)
+    Mini -> RS ++ : ms = listerModerateur()
+    return
+    opt test==True  && m in ms && etat==ACTIF
+       	   create "__Membre__" as mem
+       	   Mini -> mem ++: creerMembre(u,pseudonymeMembre,False,r)
 	   return
-	 end
-    end
     end
 end
 return

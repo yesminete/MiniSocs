@@ -12,72 +12,68 @@ skinparam class {
 }
 
 'Classes, énumérations, etc.'
-class RéseauSocial {
-  -NetworkId: Interger
-  -Nom: String
-  -Descrip: String
-  -IsOpen: Bool
-  -MembersList()
-  -ModérateurList()
-  -MessageList()
+class ReseauSocial {
+  -id: Interger
+  -nom: String
+  -description: String
+  -estOuvert: Bool
+  -ListerModerateur():collection<Membre>
 }
 
 
 class Utilisateur {
-  -idUtilisateur: Integer
+  -id: Integer
   -nom: String
-  -prénom: String
+  -prenom: String
   -adresseMail: String
-  -etatCompte: ÉtatCompte
+  -etatCompte: EtatCompte
   -pseudonyme: String
   -activerCompte()
   -desactiverCompte()
-  -configurerCompte()
-  -créer()
+  -creerReseauSocial()
 }
 
 
-class Abonnement{
-  -pseudonom : String
-  -statut : Statut
+class Membre{
+  -pseudonyme : String
+  -estModerateur : Bool
+  -posterMessage()
+  -cacherMessage()
+  -modererMessage()
+  -ajouterMembre()
+  -promouvoirMembre()
 }
 
 class Message{
-  -messageId: Interger
+  -id: Interger
   -contenu: String
-  -Statut: EtatMessage
-  -créer()
-  -modérer()
-  -cacher()
+  -statut: EtatMessage
 }
 
 class MiniSoc{
 }
 
-enum ÉtatCompte <<enum>> {
+enum EtatCompte <<enum>> {
   ACTIF
   DÉSACTIVÉ
   BLOQUÉ
 }
 
 enum EtatMessage <<enum>>{
-  EnAttente
-  Publié
-  Rejeté
-}
-enum Statut <<enum>>{
-  Modérateur
-  Membre
+  ENATTENTE
+  PUBLIE
+  REJETE
 }
 
 'Associations, etc.'
 
-MiniSoc "1" --> "..*" Utilisateur : lister
-MiniSoc "1" --> "..*" RéseauSocial : lister
-Utilisateur "1"-->"..*" Abonnement : posséder
-Abonnement "1..*"--"1" RéseauSocial : associer à
-Abonnement "..*"--"1" Message
-RéseauSocial *--"..*" Message
+MiniSoc o-- Utilisateur
+MiniSoc o-- ReseauSocial
+MiniSoc o-- Membre
+Utilisateur <|-- Membre 
+Membre "1..*"--"1" ReseauSocial : associer à
+Membre "1"-->"..*" Message
+ReseauSocial *--"..*" Message
 
 
 'Au besoin, aides pour le positionnement'

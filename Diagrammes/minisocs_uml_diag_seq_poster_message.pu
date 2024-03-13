@@ -8,35 +8,46 @@ skinparam sequenceParticiantBackgroundColor White
 skinparam sequenceActorBackgroundColor White
 
 'Déclaration des acteurs et des participants'
-actor "__me:Membre__" as me
-participant "__:MiniSocs__" as sys
-actor "__:Moderateur__" as mo
-participant "__r:réseauSocial__" as r
+actor "u1:utilisateur" as u1
+participant "__m:MiniSocs__" as sys
+participant "__r:reseauSocial__" as r
+participant "__me:Member__" as m
+actor "u2:utilisateur" as u2
 'Interaction principale'
-activate me
-me -> sys: posterMessage(content)
-activate sys
 
-alt content!=vide && estActif(me)
-    create "__:Message__" as mes
-    sys -> mes++: mes = createMessage(content,me,r)
-    return
-alt estModerateur(me)
-    sys -> r ++: ajouterMessage(mes)
-    return
-    sys --> me: notifyMessagePosted
-else 
-    sys --> me: notifymessagePending
-    sys -> mo : demandeModération(mes)
-    alt message approuvé
-    mo -> sys: approuver(mes)
-    sys -> r ++: ajouterMessage(mes)
-    return
-    sys --> me: notifyMessagePosted
-    else 
-    mo -> sys: refuser(mes)
-    sys-->me : notifyMessageRejected
-    end
-    end
-    end
+u1 -> sys: posterMessage(pseudo,contenu,nomReseau)
+opt contenu!=null && contenu!=vide && pseudo!= null && pseudo!=vide && nomReseau != null && nomReseau!= vide
+sys-> sys: m=chercherMembre(pseudo): Membre
+return
+sys-> sys: r=chercherReseauSocial(nomReseau) : ReseauSocial
+return
+opt m!=null && r!=null
+sys-> m : etat = getEtatCompte(): EtatCompte
+return
+sys-> m : reseau = getReseauSocial(): ReseauSocial
+return
+opt reseau==r && etat==Actif
+sys->m : Test = getEstModerateur()
+return
+alt Test==True
+create "__mes:Message__" as mes
+sys-> mes : mes = create(contenu,PUBLIC)
+return
+else
+create "__mes:Message__" as mes2
+sys->mes2 : mes = create(contenu,ENATTENTE)
+sys->r : listM = listerModerateur()
+return
+sys->u2 : notifieModerateurs()
+return
+u2->sys : modererMessage(pseudonyme,Acceptation)
+alt acceptation==True
+sys->mes2 : setStatut(PUBLIC)
+else
+sys->mes2 : setStatut(REJETE)
+end
+end
+end
+end
+end
 @enduml

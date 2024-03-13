@@ -1,7 +1,7 @@
 # Gestion de mini réseaux sociaux MiniSocs
 
 Binôme :
-* Yesmine LAJMICHERIF
+* Yesmine LAJMI CHERIF
 * Sabrine AZAIEZ
 
 ## Syntaxe MarkDown
@@ -55,7 +55,7 @@ l'ajout est donc supérieure ou égale à la priorité du retrait ;
 priorité de l'ajout est donc supérieure ou égale à la priorité du
 listage ;
 
-* il est *a priori* possible, c.-à-d. sans raison contraire, de
+* il est *a priori* possible, c.-à-d. sans raison contraire, decsc4102-projet
 démontrer la mise en œuvre d'un sous-ensemble des fonctionnalités du
 système, et plus particulièrement la prise en compte des principales
 règles de gestion, sans les retraits ou les listages ;
@@ -94,7 +94,7 @@ priorité HAUTE.
 ∧ pseudo bien formé (non null ∧ non vide) \
 ∧ utilisateur(à ajouter) (existe ∧ le compte n'est pas bloqué ∧  le compte n'est pas désactivé ∧ n'est pas dans le réseau) \
 ∧ L'ajout se fait par un modérateur ∧  l'ajout se fait dans un réseau social qui le modére 
-- postcondition : membre ajouté 
+- postcondition : membre ajouté avec son pseudo initial avec droit de changer son pseudo après.
 
 #### Modérer les messages (HAUTE)
 
@@ -107,8 +107,10 @@ priorité HAUTE.
 
 #### Poster Message (HAUTE)
 - précondition : \
-∧ Celui qui poste est (un membre du réseau ∧ a un compte actif ∧ a un compte non bloqué) \
-∧ Le post est (non null ∧ non vide) \
+∧ pseudonom != null && pseudonom!=vide && nomReseau!=null && nomRéseau!=vide \
+∧ utilisateur exite && réseau existe \
+∧ contenu non null ∧ contenu non vide \
+∧ Le compte de l'utilisateur est ACTIF \
 ∧ Postcondition : \
 ∧ Si le membre est un modérateur le message est publié \
 ∧ Si non le message est en attente de modération

@@ -8,25 +8,25 @@ skinparam sequenceParticiantBackgroundColor White
 skinparam sequenceActorBachkgroundColor White
 
 'Déclaration des acteurs et des participants'
-actor "__:Utilisateur__" as u
+actor "__:utilisateur__" as u
 participant "__:MiniSocs__" as m
-
-
-activate u
-u -> m: CréerRéseauSocial(nomRéseau)
-activate m
-m -> m ++: r = chercherRéseauSocial(nomRéseau)
+participant "__u:Utilisateur__" as ui
+u -> m ++: creerReseauSocial(pseudonyme,nomReseau)
+m -> m ++: r = chercherReseauSocial(nomReseau,description)
 return
-alt r!=NULL && estActive(u)
-create "__R:RéseauSocial__" as R
-m -> R++: R=créerRéseauSocial(nomRéseau)
+m -> m ++: u = chercherUtilisateur(pseudonyme)
 return
-create "__me:Member__" as mem
-m ->mem ++ : me = créerMember(u,r)
+opt r==null && u!=null
+m-> ui ++ : etat == getEtatCompte()
 return
-create "__mo:Modérateur__" as mo
-m->mo ++ : mo = créerModérateur(me)
+opt etat==ACTIF
+create "__r:ReseauSocial__" as R
+m -> R++: r=creerReseauSocial(nomReseau,description)
 return
+create "__me:Membre__" as mem
+m ->mem ++ : me = creerMember(u,True,r)
+return
+end
 end
 return
 @enduml
