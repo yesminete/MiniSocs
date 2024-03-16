@@ -117,10 +117,13 @@ priorité HAUTE.
 
 #### Créer réseau social (HAUTE)
 - précondition : \
-^ Le compte de l'utilisateur est (actif ∧ non bloqué) \
+^ pseudonyme!= null && nomReseau!=null
+^ Utilisateur existe \
+^ Etat du compte utilisateur Actif \
+^ Reseau n'existe pas \
 ∧ postcondition : \
-∧ Le réseau est créé
-∧ L'utilisateur avec droit de modération du réseau 
+∧ Le réseau est créé \
+∧ Un membre est créer avec droit de modération
 
 
 NB : l'opération est idempotente.

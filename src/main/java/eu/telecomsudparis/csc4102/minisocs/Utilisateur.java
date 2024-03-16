@@ -89,6 +89,32 @@ public class Utilisateur {
 		return etatCompte;
 	}
 
+	 /**
+     * Obtient le nom de l'utilisateur.
+     * 
+     * @return Le nom de l'utilisateur.
+     */
+    public String getNom() {
+        return nom;
+    }
+
+    /**
+     * Obtient le prénom de l'utilisateur.
+     * 
+     * @return Le prénom de l'utilisateur.
+     */
+    public String getPrenom() {
+        return prenom;
+    }
+
+    /**
+     * Obtient l'adresse courriel de l'utilisateur.
+     * 
+     * @return L'adresse courriel de l'utilisateur.
+     */
+    public String getCourriel() {
+        return courriel;
+    }
 	/**
 	 * rend inactif le compte de l'utilisateur. L'opération est
 	 * idempotente. L'opération est refusée si le compte n'est pas actif.

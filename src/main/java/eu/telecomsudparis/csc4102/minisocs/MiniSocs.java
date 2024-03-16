@@ -22,7 +22,7 @@ public class MiniSocs {
 	 * les utilisateurs.
 	 */
 	private final Map<String, Utilisateur> utilisateurs;
-
+	private final Map<String, ReseauSocial> reseauSociaux;
 	/**
 	 * construit une instance du système.
 	 * 
@@ -31,6 +31,7 @@ public class MiniSocs {
 	public MiniSocs(final String nomDuSysteme) {
 		this.nomDuSysteme = nomDuSysteme;
 		this.utilisateurs = new HashMap<>();
+		this.reseauSociaux = new HashMap<>();
 	}
 
 	/**
@@ -39,7 +40,7 @@ public class MiniSocs {
 	 * @return {@code true} si l'invariant est respecté.
 	 */
 	public boolean invariant() {
-		return nomDuSysteme != null && !nomDuSysteme.isBlank() && utilisateurs != null;
+		return nomDuSysteme != null && !nomDuSysteme.isBlank() && utilisateurs != null && reseauSociaux!=null;
 	}
 
 	/**
@@ -118,5 +119,34 @@ public class MiniSocs {
 	@Override
 	public String toString() {
 		return "MiniSocs [nomDuSysteme=" + nomDuSysteme + ", utilisateurs=" + utilisateurs + "]";
+	}
+
+	public void creerReseauSocial(final String pseudoUtilisateur,final String pseudoMembre, final String nomReseau) throws OperationImpossible {
+		if (pseudoUtilisateur == null || pseudoUtilisateur.isBlank()) {
+			throw new OperationImpossible("pseudo utilisateur ne peut pas être null ou vide");
+		}
+		if (nomReseau == null || nomReseau.isBlank()) {
+			throw new OperationImpossible("le nom du réseau ne peut pas être null ou vide");
+		}
+		if (pseudoMembre == null || pseudoMembre.isBlank()) {
+			throw new OperationImpossible("pseudo membre ne peut pas être null ou vide");
+		}
+		ReseauSocial r = reseauSociaux.get(nomReseau);
+		if (r!=null) {
+			throw new OperationImpossible("un réseau avec ce nom existe");	
+		}
+		Utilisateur u = utilisateurs.get(pseudoUtilisateur);
+		if (u == null) {
+			throw new OperationImpossible("utilisateur inexistant avec ce pseudo (" + pseudoUtilisateur + ")");
+		}
+		if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
+			throw new OperationImpossible("le compte est bloqué");
+		}
+		if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
+			throw new OperationImpossible("le compte est DESACTIVE");	
+		}
+		reseauSociaux.put(nomReseau,new ReseauSocial(nomReseau,true));
+		reseauSociaux.get(nomReseau).ajouterMembre(new Membre(u,pseudoMembre,true,reseauSociaux.get(nomReseau)));
+		assert invariant();
 	}
 }

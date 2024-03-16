@@ -11,21 +11,27 @@ skinparam sequenceActorBachkgroundColor White
 actor "__:utilisateur__" as u
 participant "__:MiniSocs__" as m
 participant "__u:Utilisateur__" as ui
-u -> m ++: creerReseauSocial(pseudonyme,nomReseau)
-m -> m ++: r = chercherReseauSocial(nomReseau,description)
+u -> m ++: creerReseauSocial(pseudonymeUtilisateur,pseudonymeMembre,nomReseau)
+opt pseudonymeUtilisateur!= null && pseudonymeUtilisateur!=vide && pseudonymeMembre!= null && pseudonymeMembre!=vide && nomReseau!=null && nomReseau!=vide
+m -> m ++: r = chercherReseauSocial(nomReseau)
 return
+opt r==null
 m -> m ++: u = chercherUtilisateur(pseudonyme)
 return
-opt r==null && u!=null
+opt u!=null
 m-> ui ++ : etat == getEtatCompte()
 return
 opt etat==ACTIF
 create "__r:ReseauSocial__" as R
-m -> R++: r=creerReseauSocial(nomReseau,description)
+m -> R++: r=creerReseauSocial(nomReseau,true)
 return
 create "__me:Membre__" as mem
 m ->mem ++ : me = creerMember(u,True,r)
 return
+m -> R++ : ajouterMembre(me)
+return
+end
+end
 end
 end
 return
