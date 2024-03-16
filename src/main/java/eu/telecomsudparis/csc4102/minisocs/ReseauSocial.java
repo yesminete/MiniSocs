@@ -1,16 +1,17 @@
 package eu.telecomsudparis.csc4102.minisocs;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReseauSocial {
     private String nom;
     private boolean estOuvert;
-    private List<Membre> membres; // Liste de tous les membres du réseau social
+    private final Map<String, Membre> membres;
 
     public ReseauSocial(String nom, boolean estOuvert) {
         this.nom = nom;
         this.estOuvert = estOuvert;
-        this.membres = new ArrayList<>();
+        this.membres = new HashMap<>();
     }
 
     public String getNom() {
@@ -22,7 +23,7 @@ public class ReseauSocial {
     }
 
 
-    public boolean isEstOuvert() {
+    public boolean estOuvert() {
         return estOuvert;
     }
 
@@ -30,8 +31,12 @@ public class ReseauSocial {
         this.estOuvert = estOuvert;
     }
 
+    public Map<String, Membre> getMembres() {
+        return this.membres ;
+    }
+
     // Méthode pour ajouter un membre au réseau social
     public void ajouterMembre(Membre membre) {
-        membres.add(membre);
+        membres.put(membre.getPseudonyme(),membre);
     }
 }

@@ -149,4 +149,58 @@ public class MiniSocs {
 		reseauSociaux.get(nomReseau).ajouterMembre(new Membre(u,pseudoMembre,true,reseauSociaux.get(nomReseau)));
 		assert invariant();
 	}
+	public void ajouterMembre(final String pseudoModerateur, final String nomReseau, final String pseudoUtilisateur, final String pseudoMembre) 
+	throws OperationImpossible {
+		if (pseudoUtilisateur == null || pseudoUtilisateur.isBlank()) {
+			throw new OperationImpossible("pseudo utilisateur ne peut pas être null ou vide");
+		}
+		if (nomReseau == null || nomReseau.isBlank()) {
+			throw new OperationImpossible("le nom du réseau ne peut pas être null ou vide");
+		}
+		if (pseudoMembre == null || pseudoMembre.isBlank()) {
+			throw new OperationImpossible("pseudo membre ne peut pas être null ou vide");
+		}
+		if (pseudoModerateur == null || pseudoModerateur.isBlank()) {
+			throw new OperationImpossible("pseudo modérateur ne peut pas être null ou vide");
+		}
+		ReseauSocial r = reseauSociaux.get(nomReseau);
+		if(r==null){
+			throw new OperationImpossible("le réseau social doit exister");
+		}
+		if(!r.estOuvert()){
+			throw new OperationImpossible("le réseau social doit etre OUVERT");
+		}
+		Membre mod = r.getMembres().get(pseudoModerateur);
+		if(mod==null){
+			throw new OperationImpossible("l'utilisateur doit etre un membre de ce réseau social");
+		}
+		if(!mod.getEtatCompte().equals(EtatCompte.ACTIF)){
+			throw new OperationImpossible("l'utilisateur doit avoir un compte actif");
+		}
+		if(!mod.estModerateur()){
+			throw new OperationImpossible("l'utilisateur doit etre un modérateur de ce réseau social");
+		}
+		Utilisateur u = utilisateurs.get(pseudoUtilisateur);
+		Membre nm = r.getMembres().get(pseudoMembre);
+		if(u==null){
+			throw new OperationImpossible("l'utilisateur à ajouter doit etre existant");
+		}
+		if(!u.getEtatCompte().equals(EtatCompte.ACTIF)){
+			throw new OperationImpossible("l'utilisateur à ajouter doit avoir un compte actif");
+		}
+		if(nm!=null){
+			throw new OperationImpossible("Un membre avec un pseudonyme similaire existe ");
+		}
+
+		// verifier si l'utilisateur existe dans le réseau social sous un autre pseudonyme
+		for (Map.Entry<String, Membre> entry : r.getMembres().entrySet()) {
+			Membre it = entry.getValue();
+			if(it.getPseudonyme()==pseudoUtilisateur){
+				throw new OperationImpossible("L'utilisateur existe dans le réseau social");	
+			}
+		}
+		nm = new Membre(u,pseudoMembre, false,r);
+		r.ajouterMembre(nm);
+		assert invariant();
+	}
 }

@@ -90,5 +90,13 @@ public class Membre extends Utilisateur {
     public void setEstModerateur(boolean estModerateur) {
         this.estModerateur = estModerateur;
     }
-    njknkjblkb
+
+    /**
+     * Obtient le réseau social du membre.
+     * 
+     * @return Le reseauSocial du memre.
+     */
+    public ReseauSocial getReseauSocial() {
+        return reseauSocial;
+    }
 }
