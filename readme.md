@@ -91,10 +91,17 @@ priorité HAUTE.
 
 #### Ajouter membre (HAUTE)
 - précondition : \
-∧ pseudo bien formé (non null ∧ non vide) \
-∧ utilisateur(à ajouter) (existe ∧ le compte n'est pas bloqué ∧  le compte n'est pas désactivé ∧ n'est pas dans le réseau) \
-∧ L'ajout se fait par un modérateur ∧  l'ajout se fait dans un réseau social qui le modére 
-- postcondition : membre ajouté avec son pseudo initial avec droit de changer son pseudo après.
+∧ pseudo moderateur bien formé (non null ∧ non vide) \
+∧ pseudo utilisateur à ajouter bien formé (non null ∧ non vide) \
+∧ pseudo nouveau membre bien formé (non null ∧ non vide) \
+∧ nom réseau bien formé (non null ∧ non vide) \
+∧ Le réseau existe ^le réseau est ouvert \
+∧ Le modérateur existe (posséde un compte sur MiniSoc) ∧  le compte du modérateur est actif ^ L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére \
+∧ utilisateur(à ajouter) (existe ∧ le compte est actif ∧ n'est pas dans le réseau) \
+∧ Le pseudo de ce nouveau membre n'existe pas sur le réseau 
+ 
+- postcondition : \
+∧ membre créé et ajouté au réseau.
 
 #### Modérer les messages (HAUTE)
 
@@ -117,14 +124,15 @@ priorité HAUTE.
 
 #### Créer réseau social (HAUTE)
 - précondition : \
-^ pseudonyme!= null && nomReseau!=null
+^ pseudonymeUtilisateur!= null && pseudonymeUtilisateur!= vide \
+^ pseudonymeMembre!= null  && pseudonymeMembre!= vide \
+^ nomReseau!=null && nomRéseau!=vide\
 ^ Utilisateur existe \
 ^ Etat du compte utilisateur Actif \
 ^ Reseau n'existe pas \
 ∧ postcondition : \
 ∧ Le réseau est créé \
-∧ Un membre est créer avec droit de modération
-
+∧ Un membre est créer avec droit de modération et ajouté à ce réseau
 
 NB : l'opération est idempotente.
 #### Autres cas d'utilisation et leur priorité respective

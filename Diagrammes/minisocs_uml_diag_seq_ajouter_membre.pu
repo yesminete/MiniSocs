@@ -11,26 +11,45 @@ participant "__r:RéseauSocial__" as RS
 participant "__m:Member__" as mod
 participant "__u:Utilisateur__" as u
 m -> Mini ++: ajouterMembre(pseudonymeModerateur, nomReseauSocial,pseudonymeUtilisateur,pseudonymeMembre)
+opt pseudonymeModerateur!=null && pseudonymeModerateur != vide && nomReseauSocial!=null && nomReseauSocial!=vide && pseudonymeUtilisateur!=null && pseudonymeUtilisateur!=vide && pseudonymeMembre!=null && pseudonymeMembre!=vide
 Mini -> Mini ++: r = chercherReseauSocial(nomReseauSocial): ReseauSocial
 return
-Mini -> Mini ++: m = chercherMembre(pseudonymeModerateur): Membre
+opt r!=null
+Mini -> r ++ : test1 = estOuvert(r) : Boolean
 return
+opt test1 == true
+Mini -> r ++: m = chercherMembre(pseudonymeModerateur): Membre
+return
+opt m!=null
+ Mini -> mod ++ : Etatmod = getEtat(m) 
+ return
+ Mini -> mod ++ : test2 = getEstModerateur(m):Boolean
+ return
+ opt test2==true && Etatmod == ACTIF
 Mini -> Mini ++ : u = chercherUtilisateur(pseudonymeUtilisateur) : Utilisateur
 return
-Mini -> Mini ++ : nm = chercherMembre(pseudonymeMembre) : Membre
+opt u!=null
+    Mini -> u ++ : etatU = getEtat()
+    return
+ 
+opt etatU==actif 
+Mini -> r ++ : nm = chercherMembre(pseudonymeMembre) : Membre
 return
-opt r!=null && m!= null && u!=null && nm==null
-    Mini -> mod ++ : test = getEstModerateur(m):Boolean
-    return
-    Mini -> u ++ : etat = getEtat()
-    return
-    Mini -> RS ++ : ms = listerModerateur()
-    return
-    opt test==True  && m in ms && etat==ACTIF
+   Mini -> r ++ : membres = getMembres() : collection<membre>
+   return
+opt nm==null && u not in membres
        	   create "__Membre__" as mem
        	   Mini -> mem ++: creerMembre(u,pseudonymeMembre,False,r)
 	   return
+	   Mini -> r ++: ajouterMembre(nm)
+	   return
     end
+end
+end
+end
+end
+end
+end
 end
 return
 @enduml
