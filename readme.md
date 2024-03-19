@@ -380,33 +380,14 @@ Diagramme ([source](./Diagrammes/minisocs_uml_diag_machine_a_etats_message.pu)).
 Voici tous les attributs de la classe:
 (Rq: on a choisi une relation unidirectionnelle entre la classe membre et la classe message pour des raisons de simplifications de meme pour la classe Réseau social)
 ```
--Integer messageId 
-
 -String content 
-
 -EtatMessage Status 
- 
 ```
-Voici toutes les opérations
-```
-void modérer()
-void construire()
-void cacher ()
-
-Autre Opérations qui ne figure pas dans le diagramme de classe
-```
-- getmessageId():Integer (public)
-    retourne l'id du message
-- getcontent():String (public)
-    retourne le contenu du message
--getStatus(): String (public)
-    retourne le status du message
 
 ### 7.2.3. Invariant
 ```
-  id!= null ∧ id>0
-∧ content != null ∧ !content.isBlank()
-∧ status != null  ∧ (status = "En Attent" Or Status="Publié" Or Status="Rejeté"
+content != null ∧ !content.isBlank()
+∧ status != null
 ```
 
 
@@ -454,34 +435,73 @@ Deux tests dans le jeu de tests 2 pour l'idempotence.
 
 ### Opération constructeur
 
-|                                              | 1   | 2   | 3   | 
-|:---------------------------------------------|:----|:----|:----|
-|messageId bien formé (non null ∧ >0 )         | F   | T   | T   | 
-|content bien formé (non null ∧ non vide)      |     | F   | T   |
-|                                              |     |     |     | 
-|                                              |     |     |     |
-|                                              |     |     |     |    
-| messageId' = messageId                       | F   | F   | F   | 
-| content' = content                           | F   | F   | F   | 
-| status' = en attente                         | F   | F   | F   | 
-|                                              |     |     |     |  
-| levée d'un exception                         | oui | oui | non |
-|                                              |     |     |     |    
-| nombre de tests dans le jeu de tests         | 2   | 2   | 1   |
+|                                              | 1   | 2   |3  |
+|:---------------------------------------------|:----|:----|:--|
+| contenu bien formé (non null ∧ non vide)     | F   | T   | T |
+| status non null                              |     | F   | T |
+|                                              |     |     |   |
+| contenu' = contenu                           | F   | F   | T |
+| status' = ENATTENTE OU ACCEPTE OU REJETE     | F   | F   | T |
+|                                              |     |     |   |
+| levée d'un exception                         | oui | oui |non|
+|                                              |     |     |   |
+| nombre de tests dans le jeu de tests         | 2   |  1  | 1 |
 
 
 
-### Opération modérer
+
+### Opération accepterMessage
 
 |                                      | 1   | 2   |
 |:-------------------------------------|:----|:----|
-| status = en attente                  | F   | T   |
+| status = ENATTENTE                   | F   | T   |
 |                                      |     |     |
-| status' = (publié or rejeté)            |     | T   |
+| status' = VISIBLE                    |     | T   |
 |                                      |     |     |
 | levée d'une exception                | oui | non |
 |                                      |     |     |
-| nombre de tests dans le jeu de tests | 1   | 2   |
+| nombre de tests dans le jeu de tests | 1   | 1   |
+
+
+
+### Opération RendreMessageVisible
+
+|                                      | 1   | 2   |
+|:-------------------------------------|:----|:----|
+| status = CACHÉ                       | F   | T   |
+|                                      |     |     |
+| status' = VISIBLE                    |     | T   |
+|                                      |     |     |
+| levée d'une exception                | oui | non |
+|                                      |     |     |
+| nombre de tests dans le jeu de tests | 1   | 1   |
+
+
+
+### Opération CacherMessage
+|                                      | 1   | 2   |
+|:-------------------------------------|:----|:----|
+| status = VISIBLE                     | F   | T   |
+|                                      |     |     |
+| status' = CACHÉ                      |     | T   |
+|                                      |     |     |
+| levée d'une exception                | oui | non |
+|                                      |     |     |
+| nombre de tests dans le jeu de tests | 1   | 1   |
+
+
+### Opération refuserMessage
+
+|                                      | 1   | 2   |
+|:-------------------------------------|:----|:----|
+| status = ENATTENTE                   | F   | T   |
+|                                      |     |     |
+| status' = REJETE                     |     | T   |
+|                                      |     |     |
+| levée d'une exception                | oui | non |
+|                                      |     |     |
+| nombre de tests dans le jeu de tests | 1   | 1   |
+
 
 
 

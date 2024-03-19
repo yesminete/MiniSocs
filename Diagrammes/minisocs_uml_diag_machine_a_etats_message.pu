@@ -1,30 +1,32 @@
 @startuml
 
-'Diagramme de machine à états (PlantUML)
+'Diagramme de machine à états (PlantUML)'
 
 'Configuration charte graphique'
 
 'États et transitions'
-state EnCréation : entry: Créer()
-state Supprimé : entry: supprimer()
+state EnCréation : entry : constructeur()
+state EnDestruction : entry : destructeur()
+state "ENATTENTE" as ENATTENTE
+state "REJETE" as REJETE
+
+state ACCEPTE {
+    [*] --> visible
+    visible --> caché : MessageCaché()/cacher()
+    caché --> visible : MessageVisible()/RendreVisible()
+}
+state c <<choice>>
 
 [*] -right-> EnCréation
-EnCréation -right-> Brouillon
-state c <<choice>>
-Brouillon --> c
-c --> Visible :[estModérateur]: Publier le message \n/Publier()
-c --> EnAttente :[estMembre]: Message en attente d'etre approuvé per le modérateur \n/ Attendre()
-state a <<choice>>
-EnAttente --> a
-a --> Rejeté : Message rejeté par le modérateur\n/Rejeter()
-a --> Approuvé 
-Rejeté --> Supprimé
-Approuvé --> Visible 
-Visible --> nonVisible: Message peut etre cacher par son auteur \n/ Cacher()
-Visible --> Supprimé : supprimer()
-nonVisible --> Supprimé : supprimer()
-
-Supprimé-left->[*]
+EnCréation -right-> c
+c --> ACCEPTE : [if estmodérateur == true]
+c --> ENATTENTE : [else]
+ENATTENTE--> ACCEPTE : Message Accepté\n/ Accepter()
+ENATTENTE--> EnDestruction : demande destruction
+ENATTENTE--> REJETE : Message rejeté\n/ Refuser()
+ACCEPTE --> EnDestruction : demande destruction
+REJETE --> EnDestruction : demande destruction
+EnDestruction-left-> [*]
 
 @enduml
-  
+
