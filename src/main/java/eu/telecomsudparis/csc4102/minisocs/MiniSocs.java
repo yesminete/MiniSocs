@@ -86,6 +86,10 @@ public class MiniSocs {
 		return utilisateurs.values().stream().map(Utilisateur::toString).toList();
 	}
 
+	public List<String> listerReseaux() {
+		return reseauSociaux.values().stream().map(ReseauSocial::toString).toList();
+	}
+
 	/**
 	 * désactiver son compte utilisateur.
 	 * 
@@ -195,7 +199,7 @@ public class MiniSocs {
 		// verifier si l'utilisateur existe dans le réseau social sous un autre pseudonyme
 		for (Map.Entry<String, Membre> entry : r.getMembres().entrySet()) {
 			Membre it = entry.getValue();
-			if(it.getPseudonyme()==pseudoUtilisateur){
+			if(it.equals(u)){
 				throw new OperationImpossible("L'utilisateur existe dans le réseau social");	
 			}
 		}

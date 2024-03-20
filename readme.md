@@ -101,7 +101,7 @@ priorité HAUTE.
 ∧ Le pseudo de ce nouveau membre n'existe pas sur le réseau 
  
 - postcondition : \
-∧ membre créé et ajouté au réseau.
+∧ membre créé et ajouté au réseau// Vérification qu'au moins un membre est modérateur.
 
 #### Modérer les messages (HAUTE)
 
@@ -223,13 +223,17 @@ nombre de tests dans le jeu de tests                | 2 | 4 | 2 | 1
 #### Créer réseau social (HAUTE)
 
 
-|                                          | 1 | 2 |
-|:-----------------------------------------|:--|:--|
-| Le compte de l'utilisateur est (active ∧ non bloqué)    | F | T | 
-| Le réseau est créé | F  | T |
-| L'utilisateur avec droit de modération du réseau   |  F |  T | 
-|                                           |   |   |   |   |
-| nombre de tests dans le jeu de tests     | 2 | 1 | 
+|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|
+| pseudonymeUtilisateur!= null && pseudonymeUtilisateur!= vide | F  | T | T | T | T | T | T |
+| pseudonymeMembre!= null && pseudonymeMembre!= vide | |  F | F | T | T | T | T | T |
+| nomReseau!=null && nomRéseau!=vide   |   |   | F  | T | T | T | T |
+| Utilisateur existe |   |   |   |  F | T |  T | T |
+| Etat du compte utilisateur Actif |   |   |   |   |   F | T | T |
+| Reseau n’existe pas |   |   |   |   |  | F | T |
+| Le réseau est créé | F | F | F | F | F | F  | T |
+| Un membre est créer avec droit de modération et ajouté à ce réseau | F | F | F | F | F | F  | T |
+| nombre de tests dans le jeu de tests     | 2 | 2 | 2 | 1 | 2 | 1 | 1 | 
 
 # 3. Conception
 

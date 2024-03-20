@@ -1,18 +1,11 @@
 package eu.telecomsudparis.csc4102.minisocs;
 
-/**
- * Cette classe représente un membre du réseau social, qui est une spécialisation
- * d'un utilisateur avec des fonctionnalités et des attributs supplémentaires,
- * notamment un pseudonyme spécifique au membre et un indicateur de modérateur.
- * 
- * Elle hérite de la classe Utilisateur et ajoute des attributs et méthodes propres
- * aux membres du réseau social.
- * 
- */
+import java.util.Objects;
+
+
 public class Membre extends Utilisateur {
     /**
      * Le pseudonyme spécifique du membre dans le réseau social.
-     * Ce champ est ajouté pour illustrer la demande, bien que potentiellement redondant.
      */
     private String pseudonymeMembre;
 
@@ -53,6 +46,12 @@ public class Membre extends Utilisateur {
         this.pseudonymeMembre = pseudonymeMembre;
         this.estModerateur = estModerateur;
         this.reseauSocial = reseauSocial;
+    }
+
+    public boolean invariant() {
+        return super.invariant() && 
+               pseudonymeMembre != null && !pseudonymeMembre.isBlank() && 
+               reseauSocial != null; 
     }
 
     /**
@@ -99,4 +98,34 @@ public class Membre extends Utilisateur {
     public ReseauSocial getReseauSocial() {
         return reseauSocial;
     }
+
+    @Override
+    public int hashCode() {
+        int prime = 31;
+        int result = 1;
+        result = prime * result + ((pseudonymeMembre == null) ? 0 : pseudonymeMembre.hashCode());
+        result = prime * result + ((this.reseauSocial.getNom() == null) ? 0 : this.reseauSocial.getNom().hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Membre)) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        Membre other = (Membre) obj;
+        return Objects.equals(pseudonymeMembre, other.pseudonymeMembre) &&
+               Objects.equals(this.getReseauSocial().getNom(), other.getReseauSocial().getNom());
+    }
+
+	@Override
+	public String toString() { 
+		return "Membre [pseudonyme=" + pseudonymeMembre + 
+        ", est moderateur =" + estModerateur + 
+        ",réseau social = "+ reseauSocial.getNom() 
+        + "]";
+	}
+
 }
