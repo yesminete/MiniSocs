@@ -196,3 +196,66 @@ pourquoi F F F dans column 3?
   column 3 - nombre devrait etre 3
 2. Table de décision des tests unitaires de la méthode Message::modérer
 - [] OK
+
+## Programmation du logiciel
+
+### Utilisation des outils de programmation
+
+1. Module Maven et tests avec JUnit
+- [] OK
+
+### Programmation de la solution
+
+#### Classes du diagramme de classes avec leurs attributs
+
+Good
+
+#### Méthodes des cas d'utilisation de base
+
+1. Cas d'utilisation « créer un réseau social »
+- [] Excellent
+2. Cas d'utilisation « ajouter un membre à un réseau social »
+- [] Excellent
+3. Cas d'utilisation « poster un message »
+- [] Excellent
+
+#### Cohérence entre le code et le modèle
+
+1. Cohérences du code avec le diagramme de classes
+- [] JAVA-07-Cohérence-avec-diagramme-de-classes
+  - Il faudra veiller à ce que la modélisation et les classes JAVA
+    du diagramme de classes soient en cohérence. Pour le moment cela
+    n'est pas le cas. Par exemple, les types des attributs sont
+    différents, les noms des attributs sont différents, les
+    attributs n'ont pas la bonne visibilité...
+2. Cohérences du code avec les diagrammes de séquence
+- [] JAVA-08-Cohérence-avec-diagrammes-de-séquence
+  - Il faudra veiller à ce que la modélisation et les opérations des
+    classes JAVA soient en cohérence. Pour le moment ce n'est pas le
+    cas. Par exemple, les noms des méthodes sont différents, les
+    prototypes des méthodes sont différents...
+
+## Programmation et exécution des tests
+
+### Tests de validation des cas d'utilisation
+
+
+
+[] JAVATEST-04-Test-manquant-dans-classe-de-test
+
+- Dans une ou plusieurs classes de test, il manque un ou plusieurs
+  tests.
+- 
+1. Cas d'utilisation « créer un réseau social »
+- [] GOOD - A COMPLETER
+2. Cas d'utilisation « ajouter un membre à un réseau social »
+- [] A FAIRE
+3. Cas d'utilisation « poster un message »
+- [] GOOD - A COMPLETER
+
+### Tests unitaires des méthodes d'une classe
+
+1. Constructeur de la classe `Message`
+- [] EXCELLENT
+2. Méthode `modérer` de la classe `Message`
+- [] A FAIRE
