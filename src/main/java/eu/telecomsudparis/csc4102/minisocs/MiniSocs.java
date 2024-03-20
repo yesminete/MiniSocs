@@ -207,4 +207,72 @@ public class MiniSocs {
 		r.ajouterMembre(nm);
 		assert invariant();
 	}
+	
+	
+	/**
+	 * Poster un Message dans un réseau social qui doit etre existant
+	 * 
+	 * @param contenu    le contenu du message.
+	 * @param pseudonyme   le pseudonyme de l'utilisateur qui est membre et qui publie le message.
+	 * @param pseudoMembre le pseudonyme du membre qui va publier le message dans le reseau .
+	 * @param nomReseau le réseau dans lequel le message va etre publié 
+	 * @throws OperationImpossible en cas de problème sur les pré-conditions.
+	 */
+	public void PosterMessage(final String contenu, final String pseudonyme, final String pseudoMembre, final String nomReseau)
+			throws OperationImpossible {
+		
+		if (nomReseau == null || nomReseau.isBlank()) {
+			throw new OperationImpossible("nomReseau ne peut pas être null ou vide");
+		}
+		if (pseudonyme == null || pseudonyme.isBlank()) {
+			throw new OperationImpossible("pseudonyme ne peut pas être null ou vide");
+		}
+		if (pseudo_membre == null || pseudoMembre.isBlank()) {
+			throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
+		}
+		if (contenu== null || contenu.isBlank()) {
+			throw new OperationImpossible("le contenu du message ne peut pas être null ou vide");
+		}
+		
+		Utilisateur u = utilisateurs.get(pseudonyme);
+		if (u == null) {
+			throw new OperationImpossible("utilisateur inexistant avec ce pseudo (" + pseudonyme + ")");
+		}
+		if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
+			throw new OperationImpossible("le compte est bloqué");
+		}
+		if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
+			throw new OperationImpossible("le compte est desactivé");
+		}
+	
+		Réseau r = reseaux.get(nomReseau);
+		if (r == null) {
+			throw new OperationImpossible("Réseau avec nom (" + nomReseau + " ) n'existe pas. ");
+		}
+		if (r.getEtatRéseau().equals(EtatRéseau.FERMÉ)) {
+			throw new OperationImpossible("le réseau est fermé");
+		}
+		//retourner tous les membres associés à l'utilisateur et puis extraire le membre ayant un pseudonyme pseudo_membre
+		Map<String, Membre> membres = u.getMembre();
+		Membre m = membres.get(pseudoMembre);
+		if (m == null) {
+			throw new OperationImpossible("Membre avec ce pseudonyme (" + pseudoMembre + " ) n'existe pas. ");
+		}
+		
+		// associer un état au message en fonction de l'état du membre
+		EtatMessage etatMessage;
+		if (m.getEtatMembre().equals(EtatMembre.MODERATEUR)) {
+		    etatMessage = EtatMessage.VISIBLE;
+		} else {
+		    etatMessage = EtatMessage.EnAttente;
+		}
+		
+		//creer une instance de ce message avec l'etatMessage correspondnat 
+		
+		Message message=new Message(contenu, etatMessage);
+		
+		r.ajouterMessage(message);
+		
+		assert invariant();
+	}
 }
