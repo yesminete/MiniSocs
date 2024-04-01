@@ -13,13 +13,16 @@ skinparam class {
 
 'Classes, énumérations, etc.'
 class ReseauSocial {
+  -id: Interger
   -nom: String
+  -description: String
   -estOuvert: Bool
   -ListerModerateur():collection<Membre>
 }
 
 
 class Utilisateur {
+  -id: Integer
   -nom: String
   -prenom: String
   -adresseMail: String
@@ -32,7 +35,7 @@ class Utilisateur {
 
 
 class Membre{
-  -pseudonymeMembre : String
+  -pseudoMembre : String
   -estModerateur : Bool
   -posterMessage()
   -cacherMessage()
@@ -42,13 +45,11 @@ class Membre{
 }
 
 class Message{
-  -id: Interger
   -contenu: String
   -statut: EtatMessage
 }
 
 class MiniSoc{
-nomDuSystem: String
 }
 
 enum EtatCompte <<enum>> {
@@ -59,7 +60,7 @@ enum EtatCompte <<enum>> {
 
 enum EtatMessage <<enum>>{
   ENATTENTE
-  PUBLIE
+  ACCEPTE
   REJETE
 }
 
@@ -67,9 +68,9 @@ enum EtatMessage <<enum>>{
 
 MiniSoc o-- Utilisateur
 MiniSoc o-- ReseauSocial
-Utilisateur <|-- Membre 
+Utilisateur "1"-->"*" Membre : devenir 
 Membre "1..*"--"1" ReseauSocial : associer à
-Membre "1"-->"..*" Message
+Membre "1"-->"..*" Message : poster
 ReseauSocial *--"..*" Message
 
 
