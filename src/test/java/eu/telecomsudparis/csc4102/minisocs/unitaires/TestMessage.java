@@ -11,111 +11,128 @@ import eu.telecomsudparis.csc4102.minisocs.Message;
 
 class TestMessage {
 
-	@BeforeEach
-	void setUp() {
-	}
-	@AfterEach
-	void tearDown() {
-	}
+    @BeforeEach
+    void setUp() {
+    }
+    @AfterEach
+    void tearDown() {
+    }
 
-	@Test
-	void constructeurMessageTest1Jeu1() {
-		Assertions.assertThrows(IllegalArgumentException.class,
-				() -> new Message (null, EtatMessage.ENATTENTE)) ;
-	}
+    @Test
+    void constructeurMessageTest1Jeu1() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Message (null, EtatMessage.ENATTENTE)) ;
+    }
 
-	@Test
-	void constructeurMessageTest1Jeu2() {
-		Assertions.assertThrows(IllegalArgumentException.class,
-		 () -> new Message("", EtatMessage.ENATTENTE));
-	}
+    @Test
+    void constructeurMessageTest1Jeu2() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Message("", EtatMessage.ENATTENTE));
+    }
 
-	@Test
-	void constructeurMessageTest2Jeu1() {
-		Assertions.assertThrows(IllegalArgumentException.class, () -> new Message("contenu", null));
-	}
+    @Test
+    void constructeurMessageTest2() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Message("contenu", null));
+    }
 
-	@Test
-	void constructeurMessageTest3() {
-		Message message = new Message("contenu", EtatMessage.ENATTENTE);
-		Assertions.assertNotNull(message);
-		Assertions.assertEquals("contenu", message.getContenu());
-		Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
-	}
-	@Test
-	void constructeurMessageTest4() {
-		Message message = new Message("contenu", EtatMessage.VISIBLE);
-		Assertions.assertNotNull(message);
-		Assertions.assertEquals("contenu", message.getContenu());
-		Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
-	}
-
-	@Test
-    void accepterMessageTest1() {
+//Tester les postconditions afin de garantir que la classe Message initalise correctement les objets avec leurs états spécifiques
+    @Test
+    void constructeurMessageTest3() {
         Message message = new Message("contenu", EtatMessage.ENATTENTE);
-    	Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
-        message.AccepterMessage();
-        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
+        Assertions.assertNotNull(message);
+        Assertions.assertEquals("contenu", message.getContenu());
+        Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
     }
-    
     @Test
-    void accepterMessageTest2() {
+    void constructeurMessageTest4() {
         Message message = new Message("contenu", EtatMessage.VISIBLE);
-        message.AccepterMessage();
+        Assertions.assertNotNull(message);
+        Assertions.assertEquals("contenu", message.getContenu());
         Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
     }
     
-    @Test
-    void accepterMessageTest3() {
-        Message message = new Message("contenu", EtatMessage.REJETE);
-        // (Dans ce cas, on s'attend à une exception)
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            message.AccepterMessage();
-        });
-    }
     
-    @Test
-    void rendreMessageVisibleTest1() {
-    
-        Message message = new Message("contenu", EtatMessage.CACHÉ);
-        message.RendeVisibleMessage();
-        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
-    }
-    
-    @Test
-    void rendreMessageVisibleTest2() {
-        Message message = new Message("contenu", EtatMessage.VISIBLE);
-        message.RendeVisibleMessage();
-        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
-    }
-    
-    @Test
-    void cacherMessageTest1() {
-        Message message = new Message("contenu", EtatMessage.VISIBLE);
+    /**On s'attend à ce qu'une IllegalStateException soit levée lors de la tentative d'acceptation du message, 
+     * car un message refusé ne peut pas être accepté. C'est pourquoi cette assertion vérifie que cette exception 
+     * est bien levée lorsque accepterMessage() est appelé après que le message ait été refusé.
+     */
 
-        message.CacherMessage();
+    @Test
+    void AccepterMessageTest1() {
+            Message message = new Message("contenu", EtatMessage.ENATTENTE);
+            Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+            message.refuserMessage();
+            Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
+            Assertions.assertThrows(IllegalStateException.class, () -> message.accepterMessage());
+    }
+
+    @Test
+    void AccepterMessageTest2() {
+        Message message = new Message("contenu", EtatMessage.ENATTENTE);
+        Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+        message.accepterMessage();
+        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
+        
+    }
+    
+    //Ici le message ne peut pas étre visible s'il est refusé ! donc levée d'une exception 
+    
+    @Test
+    void RendreMessageVisibleTest1() {
+        Message message = new Message("contenu", EtatMessage.CACHÉ);
+        Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
+        message.refuserMessage();
+        Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
+        Assertions.assertThrows(IllegalStateException.class, () -> message.rendreVisibleMessage());
+    }
+    
+    @Test
+    void RendreMessageVisibleTest2() {
+        Message message = new Message("contenu", EtatMessage.CACHÉ);
+        Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
+        message.rendreVisibleMessage();
+        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
+    }
+    
+    //Levé de l'exception lorsque le message est par exemple refusé et la méthode caché est appliquer !
+    
+    @Test
+    void CacherMessageTest1() {
+        Message message = new Message("contenu", EtatMessage.VISIBLE);
+        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
+        message.refuserMessage();
+        Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
+        Assertions.assertThrows(IllegalStateException.class, () -> message.cacherMessage());
+    }
+    
+    @Test
+    void CacherMessageTest2() {
+        Message message = new Message("contenu", EtatMessage.VISIBLE);
+        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
+        message.cacherMessage();
         Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
     }
     
-    @Test
-    void cacherMessageTest2() {
-        Message message = new Message("contenu", EtatMessage.CACHÉ);
-        message.CacherMessage();
-        Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
-    }
-
-    @Test
-    void refuserMessageTest1() {
-        Message message = new Message("contenu", EtatMessage.ENATTENTE);
-        message.RefuserMessage();
-        Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
-    }
+    //Levé de l'exception lorsque le message est par exemple caché et la méthode refuser est appliquer !
     
     @Test
-    void refuserMessageTest2() {
-        Message message = new Message("contenu", EtatMessage.REJETE);
-        message.RefuserMessage();
-        Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
+    void RefuserMessageTest1() {
+            Message message = new Message("contenu", EtatMessage.ENATTENTE);
+            Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+            message.cacherMessage();
+            Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
+            Assertions.assertThrows(IllegalStateException.class, () -> message.refuserMessage());
     }
-	
+    @Test
+    void RefuserMessageTest2() {
+            Message message = new Message("contenu", EtatMessage.ENATTENTE);
+            Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
+            message.refuserMessage();
+            Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
+    }
+    
+    
+    
+    
+    
+
 }

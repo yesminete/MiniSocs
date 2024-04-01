@@ -1,131 +1,118 @@
+//CHECKSTYLE:OFF 
 package eu.telecomsudparis.csc4102.minisocs;
 
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
-public class Membre extends Utilisateur {
+public class Membre {
     /**
-     * Le pseudonyme spécifique du membre dans le réseau social.
+     * le pseudonyme du membre.
      */
-    private String pseudonymeMembre;
-
+    private final String pseudoMembre;
     /**
-     * Indique si le membre a des droits de modérateur dans le réseau social.
+     * état du membre (membre ou moderateur).
      */
     private boolean estModerateur;
-
     /**
-     * Indique le réseau social auquel ce membre fait partir.
+     * les messages postés par le membre
      */
+    private final Map<String, Message> MessagePosted;
 
-    private ReseauSocial reseauSocial;
     /**
-     * Construit un membre du réseau social avec les informations spécifiées.
+     * construction d'un membre.
      * 
-     * @param pseudonyme le pseudonyme de l'utilisateur.
-     * @param nom le nom de l'utilisateur.
-     * @param prenom le prénom de l'utilisateur.
-     * @param courriel l'adresse courriel de l'utilisateur.
-     * @param pseudonymeMembre le pseudonyme spécifique du membre dans le réseau social.
-     * @param estModerateur indique si le membre est modérateur.
-     * @param reseauSocial indique le réseau social auquel ce membre fait partir.
+     * @param pseudoMembre le pseudonyme du membre dans le reseau.
      */
-
-    public Membre(Utilisateur utilisateur, final String pseudonymeMembre, final boolean estModerateur, final ReseauSocial reseauSocial) {
-
-        // Appel du constructeur de la super classe Utilisateur avec les attributs récupérés de l'objet utilisateur existant
-        super(utilisateur.getPseudonyme(), utilisateur.getNom(), utilisateur.getPrenom(), utilisateur.getCourriel()); 
-        // Vérification pseudonymeMembre est non null non vide , utilisateur non null
-        if (pseudonymeMembre == null || pseudonymeMembre.isBlank()) {
-            throw new IllegalArgumentException("pseudonymeMembre ne peut pas être null ou vide");
+    public Membre(final String pseudoMembre, final boolean estModerateur) {
+        
+        if (pseudoMembre == null || pseudoMembre.isBlank()) {
+            throw new IllegalArgumentException("pseudoMembre ne doit pas être null ou vide");
         }
-        if(reseauSocial==null){
-            throw new IllegalArgumentException("Le réseau social ne peux pas null");
-        }
-        // Initialisation des attributs spécifiques à Membre
-        this.pseudonymeMembre = pseudonymeMembre;
+        this.pseudoMembre = pseudoMembre;
         this.estModerateur = estModerateur;
-        this.reseauSocial = reseauSocial;
+        this.MessagePosted= new HashMap<>();
+        
+        assert invariant();
     }
 
+    /**
+     * vérifie l'invariant de la classe.
+     * 
+     * @return {@code true} si l'invariant est respecté.
+     */
     public boolean invariant() {
-        return super.invariant() && 
-               pseudonymeMembre != null && !pseudonymeMembre.isBlank() && 
-               reseauSocial != null; 
+        return pseudoMembre != null && !pseudoMembre.isBlank()
+                && ((estModerateur == true) || (estModerateur == false));
     }
 
     /**
-     * Obtient le pseudonyme spécifique du membre.
+     * obtient le pseudonyme.
      * 
-     * @return le pseudonyme spécifique du membre.
+     * @return le pseudonyme.
      */
-    public String getPseudonymeMembre() {
-        return pseudonymeMembre;
+    public String getpseudoMembre() {
+        return pseudoMembre;
     }
 
     /**
-     * Définit le pseudonyme spécifique du membre.
+     * le status du membre.
      * 
-     * @param pseudonymeMembre le nouveau pseudonyme spécifique du membre.
+     * @return l'énumérateur.
      */
-    public void setPseudonymeMembre(String pseudonymeMembre) {
-        this.pseudonymeMembre = pseudonymeMembre;
-    }
-
-    /**
-     * Vérifie si le membre est modérateur.
-     * 
-     * @return {@code true} si le membre est modérateur, sinon {@code false}.
-     */
-    public boolean estModerateur() {
+    public boolean getEtatMembre() {
         return estModerateur;
     }
 
     /**
-     * Définit le statut de modérateur du membre.
-     * 
-     * @param estModerateur le nouveau statut de modérateur du membre.
+     * ajouter un message existant au membre 
      */
-    public void setEstModerateur(boolean estModerateur) {
-        this.estModerateur = estModerateur;
+    public void ajouterMessagePosted(Message message) {
+        MessagePosted.put(message.getContenu(), message);
     }
-
-    /**
-     * Obtient le réseau social du membre.
-     * 
-     * @return Le reseauSocial du memre.
-     */
-    public ReseauSocial getReseauSocial() {
-        return reseauSocial;
-    }
-
+    
     @Override
     public int hashCode() {
-        int prime = 31;
-        int result = 1;
-        result = prime * result + ((pseudonymeMembre == null) ? 0 : pseudonymeMembre.hashCode());
-        result = prime * result + ((this.reseauSocial.getNom() == null) ? 0 : this.reseauSocial.getNom().hashCode());
-        return result;
+        return Objects.hash(pseudoMembre);
     }
+
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Membre)) {
-            return false;
-        }
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
+        if (!(obj instanceof Membre)) {
+            return false;
+        }
         Membre other = (Membre) obj;
-        return Objects.equals(pseudonymeMembre, other.pseudonymeMembre) &&
-               Objects.equals(this.getReseauSocial().getNom(), other.getReseauSocial().getNom());
+        return Objects.equals(pseudoMembre, other.pseudoMembre);
+    }
+    
+    /**
+     * liste les messages postés du membre.
+     * 
+     * @return la liste des messages postés du membre.
+     */
+    public List<String> listerMessages() {
+        return MessagePosted.values().stream().map(Message::toString).toList();
+    }
+    
+    /**
+     * getter des messages postés du membre.
+     * 
+     * @return les messages postés du membre.
+     */
+    public Map<String, Message> getMessagePosted() {
+        return MessagePosted;
     }
 
-	@Override
-	public String toString() { 
-		return "Membre [pseudonyme=" + pseudonymeMembre + 
-        ", est moderateur =" + estModerateur + 
-        ",réseau social = "+ reseauSocial.getNom() 
-        + "]";
-	}
-
+    @Override
+    public String toString() {
+        return "Membre [pseudoMembre=" + pseudoMembre 
+                + ", etatMembre=" + estModerateur + "]";
+    }
 }
+
