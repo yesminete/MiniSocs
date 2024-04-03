@@ -239,8 +239,6 @@ Good
 
 ### Tests de validation des cas d'utilisation
 
-
-
 [] JAVATEST-04-Test-manquant-dans-classe-de-test
 
 - Dans une ou plusieurs classes de test, il manque un ou plusieurs
@@ -259,3 +257,39 @@ Good
 - [] EXCELLENT
 2. Méthode `modérer` de la classe `Message`
 - [] A FAIRE
+
+### 
+
+### Cohérence entre le code et le modèle
+
+1. Préconditions, postconditions et diagrammes de séquence
+- [] OK
+2. Diagrammes de classes et de séquence
+- [] A VOIR AVEC Paul - Il faut une collection de RSs dans votre diag de Classes
+3. Diagrammes de classes et code
+- [] A REVOIR - Il faut une collection de RSs dans votre diag de Classes
+- A REVOIR - Il faut un attribut RS dans le code pour classe Membre
+4. Diagrammes de séquence et code
+- []
+5. Table de décision des tests unitaires et programmation des tests unitaires
+- [] OK
+6. Table de décision des tests de validation et programmation des tests de validation
+- [] OK- A COMPLETER
+
+## Qualité du code
+
+1. Spotbugs
+- [] OK
+2. Checkstyle
+- [] OK
+
+## Application d'idiomes JAVA
+
+1. Idiome méthode `equals` et `hashCode` de la classe `Object`
+- [] OK
+2. Idiome méthode `toString` de la classe `Object`
+- [] OK
+3. Idiome des pipelines de *Streams*
+- [] OK
+4. Idiome de gestion des références `null` avec `Optional`
+- [] A FAIRE?
