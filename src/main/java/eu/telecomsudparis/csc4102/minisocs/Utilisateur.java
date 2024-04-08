@@ -41,7 +41,7 @@ public class Utilisateur {
     /**
      * les membres.
      */
-    private final Map<String, Membre> Membres;
+    private final Map<String, Membre> membres;
 
     
     /**
@@ -70,7 +70,7 @@ public class Utilisateur {
         this.prenom = prenom;
         this.courriel = courriel;
         this.etatCompte = EtatCompte.ACTIF;
-        this.Membres = new HashMap<>();
+        this.membres = new HashMap<>();
         assert invariant();
     }
 
@@ -130,25 +130,12 @@ public class Utilisateur {
      * @return 
      * @throws OperationImpossible 
      */
-    public boolean monEtatMembre(final String pseudoMembre) throws OperationImpossible {
-        
-        Membre m = Membres.get(pseudoMembre);
-        if (m == null) {
-            throw new OperationImpossible("membre inexistant avec ce pseudo : " + pseudoMembre);
-        }
-        return m.getEtatMembre();
-    }
-    
     /**
      * ajouter un membre
      * @throws OperationImpossible 
      */
-    public void ajouterMembre(final String pseudoMembre) throws OperationImpossible {
-        Membre m = Membres.get(pseudoMembre);
-        if (m == null) {
-            throw new OperationImpossible("membre inexistant avec ce pseudo : " + pseudoMembre);
-        }
-        this.Membres.put(pseudoMembre, m);
+    public void ajouterMembre(final Membre m) throws OperationImpossible {
+        membres.put(m.getPseudonymeMembre(), m);
         assert invariant();
     }
 
@@ -158,7 +145,7 @@ public class Utilisateur {
      * @return la liste des pseudoMembre.
      */
     public List<String> listerMembres() {
-        return Membres.values().stream().map(Membre::toString).toList();
+        return membres.values().stream().map(Membre::toString).toList();
     }
     
     /**
@@ -166,8 +153,8 @@ public class Utilisateur {
      * 
      * @return la liste des membres.
      */
-    public Map<String, Membre> getMembre() {
-        return Membres;
+    public Map<String, Membre> getMembres() {
+        return membres;
     }
 
     @Override
@@ -180,7 +167,7 @@ public class Utilisateur {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Utilisateur)) {
+        if (!(obj instanceof Utilisateur) ) {
             return false;
         }
         Utilisateur other = (Utilisateur) obj;

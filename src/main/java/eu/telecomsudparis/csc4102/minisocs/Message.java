@@ -14,15 +14,15 @@ public class Message {
     /**
      * l'id du message.
      */
-    private String id;
+    final private Long id;
     /**
      * Posting message date.
      */
-    private LocalDateTime date;
+    final private LocalDateTime date;
     /**
      * le contenu du message.
      */
-    private String contenu;
+    final private String contenu;
     /**
      * l'état du message.
      */
@@ -30,25 +30,22 @@ public class Message {
     /**
      * l'id du dernier msg posté.
      */
-    private static int lastIDused = 0;
-
+    private static Long lastIDused = 0l;
 
     /**
      * construit une instance du message.
      * 
      * @param contenu le contenu du messgae.
-     * @param etatMessage l'état du message 
     */
-    public Message(final String contenu, final EtatMessage etatMessage) {
+    public Message(final String contenu) {
         
         if (contenu == null || contenu.isBlank()) {
             throw new IllegalArgumentException("le contenu d'un message ne peut pas etre ni vide ni null");
         }
-        this.id = String.valueOf(++lastIDused);
+        this.id = lastIDused++;
         this.date = LocalDateTime.now();
         this.contenu = contenu;
-        this.etatMessage = etatMessage;
-        
+        this.etatMessage = EtatMessage.ENATTENTE;
         assert invariant();
     }
 
@@ -62,6 +59,7 @@ public class Message {
         return contenu  != null  && !contenu.isBlank()  && etatMessage != null && id != null && date != null;
     }
 
+    
 
     /**
      * obtient le contenu.
@@ -80,39 +78,41 @@ public class Message {
     public EtatMessage getEtatMessage() {
         return etatMessage;
     }
-    
-     /**
-     * accepter le message posté du membre.
-     */
-    
-    public void accepterMessage() {
-        
-        if (etatMessage == EtatMessage.ENATTENTE)  {
-            
-            etatMessage = EtatMessage.VISIBLE;
-        }   
+
+    public long getId(){
+        return id;
     }
     
-     /**
-     * refuser le message posté du membre.
+    public void setEtatMessage(EtatMessage etat){
+        etatMessage = etat;
+    }
+    
+    /**
+     * moderer le message posté du membre.
      */
     
-    public void refuserMessage() {
-        
-        if (etatMessage == EtatMessage.ENATTENTE) { 
-            etatMessage = EtatMessage.REJETE ;
+     public void modererMessage(boolean acceptation) { 
+        if (etatMessage == EtatMessage.ENATTENTE)  { 
+            if(acceptation){
+                setEtatMessage(EtatMessage.VISIBLE);         
+            } 
+            else{
+                setEtatMessage(EtatMessage.REJETE);                     
+            }
         }   
+        assert invariant();
     }
+
     
      /**
      * cacher le message posté du membre.
      */
     
     public void cacherMessage() {
-        if (etatMessage == EtatMessage.VISIBLE) { 
-            
-            etatMessage = EtatMessage.CACHÉ;
+        if (etatMessage == EtatMessage.VISIBLE) {    
+            setEtatMessage(EtatMessage.CACHÉ);
         }   
+        assert invariant();
     }
     
      /**
@@ -120,15 +120,15 @@ public class Message {
      */
     
     public void rendreVisibleMessage() {
-        if (etatMessage == EtatMessage.CACHÉ) {
-            
-            etatMessage = EtatMessage.VISIBLE;
+        if (getEtatMessage() == EtatMessage.CACHÉ) { 
+            setEtatMessage(EtatMessage.VISIBLE);;
         }   
     }
+
     
     @Override
     public String toString() {
-        return "Message [id= " + id + " date= " + date + " contenu=" + contenu + " , etatMessage= " + etatMessage + "]";
+        return "Message [id= " + id.toString() + " date= " + date + " contenu=" + contenu + " , etatMessage= " + etatMessage + "]";
     }
 
 
@@ -154,7 +154,4 @@ public class Message {
         return Objects.equals(contenu, other.contenu) && Objects.equals(date, other.date);
     }
 
-    
-    
-    
 }

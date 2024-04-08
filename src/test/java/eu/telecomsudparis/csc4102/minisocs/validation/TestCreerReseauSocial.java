@@ -1,98 +1,110 @@
 // CHECKSTYLE:OFF
 package eu.telecomsudparis.csc4102.minisocs.validation;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import eu.telecomsudparis.csc4102.minisocs.EtatCompte;
 import eu.telecomsudparis.csc4102.minisocs.MiniSocs;
+import eu.telecomsudparis.csc4102.minisocs.Utilisateur;
 import eu.telecomsudparis.csc4102.util.OperationImpossible;
 
 class TestCreerReseauSocial {
-    private MiniSocs miniSocs;
-    private String nomReseauSocial;
-    private String pseudonyme;
-    private String pseudoMembre;
+	private MiniSocs miniSocs;
+	private String nomReseau;
+	private String pseudonyme;
+	private String pseudoMembre;
 
-    @BeforeEach
-    void setUp() {
-        miniSocs = new MiniSocs("MiniSocs");
-        nomReseauSocial = "reseau1";
-        pseudonyme = "utilisateur1";
-        pseudoMembre = "membre1";
+	@BeforeEach
+	void setUp() {
+		miniSocs = new MiniSocs("MiniSocs");
+		nomReseau = "reseau1";
+		pseudonyme = "utilisateur1";
+		pseudoMembre = "membre1";
+		assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudonyme, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
+	}
+
+	@AfterEach
+	void tearDown() {
+		miniSocs = null;
+		nomReseau = null;
+		pseudonyme = null;
+		pseudoMembre = null;
+	}
+
+	@Test
+	void creerReseauTest1Jeu1() throws Exception {
+		Assertions.assertThrows(OperationImpossible.class,
+				() -> miniSocs.creerReseauSocial(null, pseudoMembre,nomReseau));
+	}
+
+	@Test
+	void creerReseauTest1Jeu2() throws Exception {
+		Assertions.assertThrows(OperationImpossible.class,
+				() -> miniSocs.creerReseauSocial("",  pseudoMembre, nomReseau));
+	}
+
+    @Test
+    void creerReseauTest2Jeu1() throws Exception{
+        assertThrows(OperationImpossible.class, () -> miniSocs.creerReseauSocial(pseudonyme, null, nomReseau));
     }
 
-    @AfterEach
-    void tearDown() {
-        miniSocs = null;
-        nomReseauSocial = null;
-        pseudonyme = null;
-        pseudoMembre = null;
+	@Test
+    void creerReseauTest2Jeu2() throws Exception{
+        assertThrows(OperationImpossible.class, () -> miniSocs.creerReseauSocial(pseudonyme, "", pseudoMembre));
     }
 
     @Test
-    void creerReseauSocialTest1Jeu1() throws Exception {
-        Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.creerReseau(null, pseudonyme, pseudoMembre));
+    void creerReseauTest3Jeu1() throws Exception {
+        assertThrows(OperationImpossible.class, () -> miniSocs.creerReseauSocial(pseudonyme, pseudoMembre, null));
     }
 
     @Test
-    void creerReseauSocialTest1Jeu2() throws Exception {
-        Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.creerReseau("", pseudonyme, pseudoMembre));
+    void creerReseauTest3Jeu2() throws Exception {
+        assertThrows(OperationImpossible.class, () -> miniSocs.creerReseauSocial(pseudonyme, pseudoMembre, ""));
     }
 
-    
-    @Test
-    void creerReseauSocialTest2Jeu1() throws Exception {
-        Assertions.assertTrue(miniSocs.listerreseauxSociaux().isEmpty());
-        miniSocs.creerReseau(nomReseauSocial, pseudonyme, pseudoMembre);
-        Assertions.assertFalse(miniSocs.listerreseauxSociaux().isEmpty());
-        Assertions.assertEquals(1, miniSocs.listerreseauxSociaux().size());
-        Assertions.assertTrue(miniSocs.listerreseauxSociaux().get(0).contains(nomReseauSocial));
-        Assertions.assertTrue(miniSocs.listerreseauxSociaux().get(0).contains("true"));
-		Assertions.assertFalse(miniSocs.listerreseauxSociaux().get(0).contains("false"));
-        Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.creerReseau(nomReseauSocial, pseudonyme, pseudoMembre));
+	@Test
+    void creerReseauTest4Jeu1() throws Exception {
+        assertThrows(OperationImpossible.class, () -> miniSocs.creerReseauSocial("pseudonyme", pseudoMembre, nomReseau));
     }
-    
-    @Test
-    void creerReseauSocialTest3Jeu1() throws Exception {
-        Assertions.assertFalse(miniSocs.listerUtilisateurs().isEmpty());
-        Assertions.assertEquals(1, miniSocs.listerUtilisateurs().size());
-        Assertions.assertTrue(miniSocs.listerUtilisateurs().get(0).contains(pseudonyme));
-        Assertions.assertFalse(miniSocs.listerUtilisateurs().get(0).contains(EtatCompte.BLOQUE.toString()));
-        Assertions.assertFalse(miniSocs.listerUtilisateurs().get(0).contains(EtatCompte.DESACTIVE.toString()));
-        Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.creerReseau(nomReseauSocial, pseudonyme, pseudoMembre));
+
+	@Test
+    void creerReseauTest5Jeu1() throws Exception {
+		Utilisateur u = miniSocs.getUtilisateurs().get(pseudonyme);
+		u.desactiverCompte();
+        assertThrows(OperationImpossible.class, () -> miniSocs.creerReseauSocial(pseudonyme, pseudoMembre, nomReseau));
     }
-    
-    @Test
-    void creerReseauSocialTest4Jeu1() throws Exception {
-        Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.creerReseau(nomReseauSocial, null, pseudoMembre));
+
+	@Test
+    void creerReseauTest5Jeu2() throws Exception {
+		Utilisateur u = miniSocs.getUtilisateurs().get(pseudonyme);
+		u.bloquerCompte();
+        assertThrows(OperationImpossible.class, () -> miniSocs.creerReseauSocial(pseudonyme, pseudoMembre, nomReseau));
     }
-    
-    @Test
-    void creerReseauSocialTest4Jeu2() throws Exception {
-        Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.creerReseau(nomReseauSocial, "", pseudoMembre));
-    }
-    
-    @Test
-    void creerReseauSocialTest5Jeu1() throws Exception {
-        Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.creerReseau(nomReseauSocial, pseudonyme, null));
-    }
-    
-    @Test
-    void creerReseauSocialTest5Jeu2() throws Exception {
-        Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.creerReseau(nomReseauSocial, pseudonyme, ""));
-    }
-    
-    
+
+
+	@Test
+	void creerReseauTest6Jeu1() throws Exception {
+		Assertions.assertTrue(miniSocs.listerReseaux().isEmpty());
+		miniSocs.creerReseauSocial(pseudonyme, pseudoMembre, nomReseau);
+		Assertions.assertFalse(miniSocs.listerReseaux().isEmpty());
+		Assertions.assertEquals(1, miniSocs.listerUtilisateurs().size());
+		Assertions.assertTrue(miniSocs.listerReseaux().get(0).contains(nomReseau));
+		Assertions.assertTrue(miniSocs.listerReseaux().get(0).contains("true"));
+		Assertions.assertThrows(OperationImpossible.class,
+				() -> miniSocs.creerReseauSocial(pseudonyme, pseudoMembre, nomReseau));
+	}
+	@Test
+	void creerReseauTest7Jeu1() throws Exception {
+		miniSocs.creerReseauSocial(pseudonyme, pseudoMembre, nomReseau);
+		Assertions.assertFalse(miniSocs.listerReseaux().get(0).contains("false"));
+		Assertions.assertTrue(miniSocs.listerReseaux().get(0).contains(pseudoMembre));
+		Assertions.assertThrows(OperationImpossible.class,
+				() -> miniSocs.creerReseauSocial(pseudonyme, pseudoMembre, nomReseau));
+	}
 }
-

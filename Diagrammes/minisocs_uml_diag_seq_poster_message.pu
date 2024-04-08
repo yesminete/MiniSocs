@@ -12,40 +12,39 @@ actor "u1:utilisateur" as u1
 participant "__m:MiniSocs__" as sys
 participant "__r:reseauSocial__" as r
 participant "__me:Member__" as m
+participant "__u:Utilisateur__" as u
 actor "u2:utilisateur" as u2
 'Interaction principale'
 
-u1 -> sys: posterMessage(pseudo,contenu,nomReseau)
-opt contenu!=null && contenu!=vide && pseudo!= null && pseudo!=vide && nomReseau != null && nomReseau!= vide
-sys-> sys: m=chercherMembre(pseudo): Membre
+u1 -> sys++: posterMessage(pseudoUtilisateur,pseudoMembre,contenu,nomReseau)
+opt contenu!=null && contenu!=vide && pseudoUtilisateur!= null && pseudoUtilisateur!=vide && pseudoMembre!=null && pseudoMembre!=vide && nomReseau != null && nomReseau!= vide
+sys-> sys++: r=chercherReseauSocial(nomReseau) : ReseauSocial
 return
-sys-> sys: r=chercherReseauSocial(nomReseau) : ReseauSocial
+sys->sys++:chercherUtilsateurs(pseudoUtilisateur)
 return
-opt m!=null && r!=null
-sys-> m : etat = getEtatCompte(): EtatCompte
+opt u!=null && r!=null
+sys->r++:m=chercherMembre(pseudoMembre)
 return
-sys-> m : reseau = getReseauSocial(): ReseauSocial
+sys-> u ++: etat = getEtatCompte(): EtatCompte
 return
-opt reseau==r && etat==Actif
-sys->m : Test = getEstModerateur()
+sys-> r ++: test = estOuvert(): Boolean
+return
+sys -> u ++: me = chercherMembre(pseudoMembre):membre
+return
+opt test && etat==Actif && me==m
+sys->m ++: Test = getEstModerateur()
 return
 alt Test==True
 create "__mes:Message__" as mes
-sys-> mes : mes = create(contenu,PUBLIC)
+sys-> mes ++: mes = create(contenu)
 return
+sys-> mes : setEtatMessage(VISIBLE)
+sys->u2 : notifieMembreReseau
 else
 create "__mes:Message__" as mes2
-sys->mes2 : mes = create(contenu,ENATTENTE)
-sys->r : listM = listerModerateur()
+sys->mes2 ++: mes = create(contenu)
 return
-sys->u2 : notifieModerateurs()
-return
-u2->sys : modererMessage(pseudonyme,Acceptation)
-alt acceptation==True
-sys->mes2 : setStatut(PUBLIC)
-else
-sys->mes2 : setStatut(REJETE)
-end
+sys->u2 : notifieModerateur
 end
 end
 end

@@ -91,12 +91,13 @@ priorité HAUTE.
 
 #### Ajouter membre (HAUTE)
 - précondition : \
+∧ pseudo utilisateur bien formé (non null ∧ non vide) \
 ∧ pseudo moderateur bien formé (non null ∧ non vide) \
 ∧ pseudo utilisateur à ajouter bien formé (non null ∧ non vide) \
 ∧ pseudo nouveau membre bien formé (non null ∧ non vide) \
 ∧ nom réseau bien formé (non null ∧ non vide) \
 ∧ Le réseau existe ^le réseau est ouvert \
-∧ Le modérateur existe (posséde un compte sur MiniSoc) ∧  le compte du modérateur est actif ^ L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére \
+∧ Le modérateur existe (posséde un compte sur MiniSoc) ∧  le compte du modérateur est actif ^ L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére ^ le compte modérateur correspond au compte utilisateur \
 ∧ utilisateur(à ajouter) (existe ∧ le compte est actif ∧ n'est pas dans le réseau) \
 ∧ Le pseudo de ce nouveau membre n'existe pas sur le réseau 
  
@@ -114,10 +115,13 @@ priorité HAUTE.
 
 #### Poster Message (HAUTE)
 - précondition : \
-∧ pseudonom != null && pseudonom!=vide && nomReseau!=null && nomRéseau!=vide \
-∧ utilisateur exite && réseau existe \
+∧ pseudonomUtilisateur != null && pseudonomUtilisateur!=vide \
+∧ pseudonomMembre != null && pseudonomMembe!=vide \
+∧ nomReseau!=null && nomRéseau!=vide \
+∧ utilisateur exite et Le compte de l'utilisateur est ACTIF\
+∧ reseau existe et non ferme/
 ∧ contenu non null ∧ contenu non vide \
-∧ Le compte de l'utilisateur est ACTIF \
+∧ l'utilisateur est membre de ce reseau \
 ∧ Postcondition : \
 ∧ Si le membre est un modérateur le message est publié \
 ∧ Si non le message est en attente de modération
@@ -188,13 +192,20 @@ conditions.
 | nombre de tests dans le jeu de tests     | 2 | 1 | 1 | 1 |
 
 #### Ajouter membre (HAUTE)
-|                                                     | 1 | 2 | 3 | 4 |
-|:----------------------------------------------------|:--|:--|:--|:--|
-| pseudo bien formé (non null ∧ non vide)              | F | T | T | T |
-| utilisateur(à ajouter) (existe ∧ le compte n'est pas bloqué ∧  le compte n'est pas désactivé ∧ n'est pas dans le réseau)             |   | F | T | T |
-| L'ajout se fait par ( un modérateur ∧ dans un réseau social qui le modere )            |   |   | F | T |
-| membre ajouté  |  F |  F |  F | T 
-nombre de tests dans le jeu de tests                | 2 | 4 | 2 | 1
+|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|
+| pseudo utilisateur bien formé (non null ∧ non vide)  | F | T | T | T | T | T | T | T | T | T | T |
+| pseudo moderateur bien formé (non null ∧ non vide)  |   | F | T | T | T | T | T | T | T | T | T |
+| pseudo utilisateur à ajouter bien formé (non null ∧ non vide)  |  |  | F | T | T | T | T | T | T | T | T | T |
+| pseudo nouveau membre bien formé (non null ∧ non vide)  |   |   |   | F | T | T | T | T | T | T | T |
+| nom réseau bien formé (non null ∧ non vide)   |   |   |  |  | F | T | T | T | T | T | T |
+| Le réseau existe ^le réseau est ouvert |   |   |   |    |  |  F | T | T | T | T | T |
+| Le modérateur posséde un compte actif sur MiniSoc ^ le compte modérateur correspond au utilisateur |   |   |   |   |   |  | F | T | T | T | T |
+| L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére  |   |   |   |   |  |  |  | F | T | T | T |
+| utilisateur(à ajouter) (existe ∧ le compte est actif ∧ n'est pas dans le réseau) |   |   |   |   |   |    |   |  | F | T | T |
+|Le pseudo de ce nouveau membre n'existe pas sur le réseau     |   |   |   |   |   |    |   |  |  | F | T |
+|   membre créé et ajouté au réseau et ajouté a la liste des membres de l'utilisateur | F  | F  | F  | F  | F  | F  | F  | F  |  F | F | T |
+ nombre de test dans le jeu de test | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 3 | 4 | 1 | 1 |
 
 #### Modérer les messages (HAUTE)
 
@@ -208,17 +219,22 @@ nombre de tests dans le jeu de tests                | 2 | 4 | 2 | 1
 |                                          |   |   |   |   |
 | nombre de tests dans le jeu de tests     | 1 | 3 | 1 | 1 |
 
-#### Poster Message (HAUTE)
+#### Poster Message (HAUTE) 
 
-|                                          | 1 | 2 | 3 | 4 |
-|:-----------------------------------------|:--|:--|:--|:--|
-| Celui qui poste est (un membre du réseau ∧ a un compte actif ∧ a un compte non bloqué)    | F | T | T | T |
-| Le post est (non null ∧ non vide) |   | F | T | T |
-| Si le membre est un modérateur le message est publié    |  F |  F | F | T |
-|                                          |   |   |   |   |
-| Sinon le message est en attente de modération | F | F | T | F  |
-|                                          |   |   |   |   |
-| nombre de tests dans le jeu de tests     | 3 | 2 | 1 | 1 |
+|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|:--|:--|
+| pseudonomUtilisateur != null && pseudonomUtilisateur!=vide     | F | T | T | T | T | T | T | T | T |
+| pseudonomMembre != null && pseudonomMembe!=vide     |  | F | T | T | T | T | T | T | T |
+| nomReseau!=null && nomRéseau!=vide       |   |   | F | T | T | T | T | T | T |
+| utilisateur exite && Le compte de l'utilisateur est ACTIF  && compte membre correspond à l'utilisateur     |   |   |   | F | T | T | T | T | T |
+| contenu non null ∧ contenu non vide                                       |   |   |   |   | F | T | T | T | T |
+| reseau existe ^ ouvert                   |   |   |   |   |   | F | T | T | T |
+|  l'utilisateur est membre de ce reseau                                     |   |   |   |   |   |   | F | T | T |
+|  l'utilisateur est un modérateur de ce reseau
+                                           |   |   |   |   |   |   |   | F | T |
+| le message est en attente de modération  | F | F | T | F | F | F | F | T | F |
+| le message est publié                    | F | F | T | F | F | F | F | F | T |
+| nombre de tests dans le jeu de tests     | 2 | 2 | 2 | 4 | 2 | 2 | 2 | 1 | 1 |
 
 #### Créer réseau social (HAUTE)
 

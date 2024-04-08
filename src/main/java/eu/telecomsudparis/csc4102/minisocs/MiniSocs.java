@@ -11,7 +11,6 @@ import eu.telecomsudparis.csc4102.util.OperationImpossible;
 /**
  * Cette classe est la façade du logiciel.
  * 
- * @author Denis Conan
  */
 public class MiniSocs {
     /**
@@ -38,7 +37,7 @@ public class MiniSocs {
      * @return {@code true} si l'invariant est respecté.
      */
     public boolean invariant() {
-        return nomDuSysteme != null && !nomDuSysteme.isBlank() && utilisateurs != null;
+        return nomDuSysteme != null && !nomDuSysteme.isBlank() && utilisateurs != null && reseauxSociaux!=null;
     }
 
     /**
@@ -85,6 +84,28 @@ public class MiniSocs {
     }
 
     /**
+     * liste les réseaux sociaux.
+     * 
+     * @return la liste des pseudonymes des utilisateurs.
+     */
+
+    public List<String> listerReseaux() {
+		return reseauxSociaux.values().stream().map(ReseauSocial::toString).toList();
+	}
+
+    // retourne les réseau sociaux
+
+    public Map<String, ReseauSocial> getReseauxSociaux() {
+		return reseauxSociaux;
+	}
+	
+    //retourne les utilisateurs
+
+	public Map<String, Utilisateur> getUtilisateurs() {
+		return utilisateurs;
+	}
+
+    /**
      * désactiver son compte utilisateur.
      * 
      * @param pseudo le pseudo de l'utilisateur.
@@ -104,30 +125,232 @@ public class MiniSocs {
         u.desactiverCompte();
         assert invariant();
     }
+
+    /**
+     * bloquer un compte utilisateur.
+     * 
+     * @param pseudo le pseudo de l'utilisateur.
+     * @throws OperationImpossible en cas de problèmes sur les pré-conditions.
+     */
+
+    public void bloquerCompteUtilisateur(final String pseudo) throws OperationImpossible {
+		if (pseudo == null || pseudo.isBlank()) {
+			throw new OperationImpossible("pseudo ne peut pas être null ou vide");
+		}
+		Utilisateur u = utilisateurs.get(pseudo);
+		if (u == null) {
+			throw new OperationImpossible("utilisateur inexistant avec ce pseudo (" + pseudo + ")");
+		}
+		if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
+			return;
+		}
+		u.bloquerCompte();
+		assert invariant();
+	}
     
     /**
-     * crée un réseau (ajoute un réseau).
+     * créer un réseau social.
      * 
-     * @param nomReseau    le nom du réseau.
-     * @param pseudonyme   le pseudonyme de l'utilisateur qui cree le réseau.
-     * @param pseudoMembre le pseudonyme du membre dans le reseau (l'utilisateur devient membre).
+     * @param pseudoUtilisateur le pseudo de l'utilisateur.
+     * @param pseudoMembre le pseudo de l'utilisateur dans ce réseau
+     * @param nomReseau le nom de ce réseau
+     * @throws OperationImpossible en cas de problèmes sur les pré-conditions.
+     */
+   
+	public void creerReseauSocial(final String pseudoUtilisateur,final String pseudoMembre, final String nomReseau) throws OperationImpossible {
+		if (pseudoUtilisateur == null || pseudoUtilisateur.isBlank()) {
+			throw new OperationImpossible("pseudo utilisateur ne peut pas être null ou vide");
+		}
+		if (nomReseau == null || nomReseau.isBlank()) {
+			throw new OperationImpossible("le nom du réseau ne peut pas être null ou vide");
+		}
+		if (pseudoMembre == null || pseudoMembre.isBlank()) {
+			throw new OperationImpossible("pseudo membre ne peut pas être null ou vide");
+		}
+		ReseauSocial r = reseauxSociaux.get(nomReseau);
+		if (r!=null) {
+			throw new OperationImpossible("un réseau avec ce nom existe");	
+		}
+		Utilisateur u = utilisateurs.get(pseudoUtilisateur);
+		if (u == null) {
+			throw new OperationImpossible("utilisateur inexistant avec ce pseudo (" + pseudoUtilisateur + ")");
+		}
+		if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
+			throw new OperationImpossible("le compte est bloqué");
+		}
+		if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
+			throw new OperationImpossible("le compte est DESACTIVE");	
+		}
+		reseauxSociaux.put(nomReseau,new ReseauSocial(nomReseau,true));
+		reseauxSociaux.get(nomReseau).ajouterMembre(new Membre(pseudoMembre,true,reseauxSociaux.get(nomReseau)));
+        u.ajouterMembre(reseauxSociaux.get(nomReseau).getMembres().get(pseudoMembre));
+		assert invariant();
+	}   
+    
+    /**
+     * ajouter un membre à un réseau social.
+     * 
+     * @param pseudoUtilisateurMod le pseudo Utilisateur du moderateur
+     * @param pseudoModerateur le pseudo du modérateur
+     * @param pseudoUtilisateur le pseudo de l'utilisateur à ajouter dans le réseau.
+     * @param pseudoMembre le pseudo de l'utilisateur dans ce réseau
+     * @param nomReseau le nom de ce réseau
+     * @throws OperationImpossible en cas de problèmes sur les pré-conditions.
+     */
+    
+	public void ajouterMembre(final String pseudoUtilisateurMod,final String pseudoModerateur, final String nomReseau, final String pseudoUtilisateur, final String pseudoMembre) 
+	throws OperationImpossible {
+        if (pseudoUtilisateurMod == null || pseudoUtilisateurMod.isBlank()) {
+			throw new OperationImpossible("pseudo utilisateur ne peut pas être null ou vide");
+		}
+		if (pseudoUtilisateur == null || pseudoUtilisateur.isBlank()) {
+			throw new OperationImpossible("pseudo utilisateur ne peut pas être null ou vide");
+		}
+		if (nomReseau == null || nomReseau.isBlank()) {
+			throw new OperationImpossible("le nom du réseau ne peut pas être null ou vide");
+		}
+		if (pseudoMembre == null || pseudoMembre.isBlank()) {
+			throw new OperationImpossible("pseudo membre ne peut pas être null ou vide");
+		}
+		if (pseudoModerateur == null || pseudoModerateur.isBlank()) {
+			throw new OperationImpossible("pseudo modérateur ne peut pas être null ou vide");
+		}
+		ReseauSocial r = reseauxSociaux.get(nomReseau);
+		if(r==null){
+			throw new OperationImpossible("le réseau social doit exister");
+		}
+		if(!r.estOuvert()){
+			throw new OperationImpossible("le réseau social doit etre OUVERT");
+		}
+		Membre mod = r.getMembres().get(pseudoModerateur);
+		if(mod==null){
+			throw new OperationImpossible("l'utilisateur doit appartenir à ce réseau social("+nomReseau+")");
+		}
+        Utilisateur modU = utilisateurs.get(pseudoUtilisateurMod);   
+		if(!modU.getEtatCompte().equals(EtatCompte.ACTIF)){
+			throw new OperationImpossible("l'utilisateur doit avoir un compte actif");
+		}
+		if(!mod.estModerateur()){
+			throw new OperationImpossible("l'utilisateur doit etre un modérateur de ce réseau social et non pas seulement un membre");
+		}
+        if(modU.getMembres().get(pseudoModerateur)!=mod){
+			throw new OperationImpossible("l'utilisateur ne correspond pas au compte moderateur mentionné");         
+        }
+		Utilisateur u = utilisateurs.get(pseudoUtilisateur);
+		Membre nm = r.getMembres().get(pseudoMembre);
+		if(u==null){
+			throw new OperationImpossible("l'utilisateur à ajouter doit exister sur MiniSoc");
+		}
+		if(!u.getEtatCompte().equals(EtatCompte.ACTIF)){
+			throw new OperationImpossible("l'utilisateur à ajouter doit avoir un compte actif");
+		}
+		if(nm!=null){
+			throw new OperationImpossible("Un membre avec un pseudonyme similaire existe ");
+		}
+
+		// verifier si l'utilisateur existe dans le réseau social sous un autre pseudonyme
+		for (Map.Entry<String, Membre> entry : u.getMembres().entrySet()) {
+			Membre it = entry.getValue();
+			if(r.equals(it.getReseauSocial())){
+				throw new OperationImpossible("L'utilisateur existe dans le réseau social sous un autre pseudo");	
+			}
+		}
+		nm = new Membre(pseudoMembre, false,r);
+		r.ajouterMembre(nm);
+        u.ajouterMembre(nm);
+		assert invariant();
+	}
+
+    
+    public Long posterMessage(final String pseudoUtilisateur, final String contenu, final String pseudoMembre, final String nomReseau)
+			throws OperationImpossible {
+		
+        if (pseudoUtilisateur == null || pseudoUtilisateur.isBlank()) {
+			throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
+		}
+		if (nomReseau == null || nomReseau.isBlank()) {
+			throw new OperationImpossible("nomReseau ne peut pas être null ou vide");
+		}
+		if (pseudoMembre == null || pseudoMembre.isBlank()) {
+			throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
+		}
+		if (contenu== null || contenu.isBlank()) {
+			throw new OperationImpossible("le contenu du message ne peut pas être null ou vide");
+		}
+
+        ReseauSocial r = reseauxSociaux.get(nomReseau);
+        Utilisateur u = utilisateurs.get(pseudoUtilisateur);
+		if (r == null) {
+			throw new OperationImpossible("Réseau avec nom (" + nomReseau + " ) n'existe pas. ");
+		}
+        if (u == null) {
+			throw new OperationImpossible("Utilisateur inexistant");
+		}
+        Membre m = r.getMembres().get(pseudoMembre);
+		if (m == null) {
+			throw new OperationImpossible("Membre avec ce pseudonyme (" + pseudoMembre + " ) n'existe pas dans le reseau (" + nomReseau + "). ");
+		}
+		if (!r.estOuvert()) {
+			throw new OperationImpossible("le réseau est fermé");
+		}
+		if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
+			throw new OperationImpossible("le compte est bloqué");
+		}
+		if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
+			throw new OperationImpossible("le compte est desactivé");
+		}
+        if(u.getMembres().get(pseudoMembre)!=m){
+            throw new OperationImpossible("le pseudo du membre indiqué ne correspond pas à cette utilisateur");
+        }
+		
+		//creer une instance de ce message avec l'etatMessage correspondnat 
+		
+		Message message=new Message(contenu);
+        if (m.estModerateur()) {
+            message.setEtatMessage(EtatMessage.VISIBLE);
+            // notifie membre du réseau
+		} 
+        // Notifications des moderateurs
+        // retourner l'id message a celui qui a posté
+		r.ajouterMessage(message);
+        assert invariant();
+        return message.getId();
+	}
+    
+    /**
+     * Un modérateur accepte un Message (en ce moment posté et en attente), il devient alors visible.
+     * 
+     * @param pseudonyme   le pseudonyme de l'utilisateur qui va accepter le message.
+     * @param pseudoMembre   le pseudo membre de l'utilsateur.
+     * @param idMessage      l'id du message à accepter 
      * @throws OperationImpossible en cas de problème sur les pré-conditions.
      */
-    public void creerReseau(final String nomReseau, final String pseudonyme, final String pseudoMembre)
+    public void modereMessage(final String pseudoModUtilisateur, final String pseudonymeModerateur, final String nomReseau, final Long idMessage, final boolean acceptation)
             throws OperationImpossible {
-        
+        if (pseudoModUtilisateur == null || pseudoModUtilisateur.isBlank()) {
+            throw new OperationImpossible("pseudonyme utilisateur ne peut pas être null ou vide");
+        }        
+        if (pseudonymeModerateur == null || pseudonymeModerateur.isBlank()) {
+            throw new OperationImpossible("pseudonyme moderateur ne peut pas être null ou vide");
+        }
         if (nomReseau == null || nomReseau.isBlank()) {
-            throw new OperationImpossible("nomReseau ne peut pas être null ou vide");
-        }
-        if (pseudonyme == null || pseudonyme.isBlank()) {
-            throw new OperationImpossible("pseudonyme ne peut pas être null ou vide");
-        }
-        if (pseudoMembre == null || pseudoMembre.isBlank()) {
             throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
         }
-        Utilisateur u = utilisateurs.get(pseudonyme);
+        if (idMessage == null) {
+            throw new OperationImpossible("l'id du message ne peut pas être null");
+        }
+        
+        ReseauSocial rs = reseauxSociaux.get(nomReseau);
+        if(rs==null){
+            throw new OperationImpossible("reseau inexistan");
+        }
+        Membre m = rs.getMembres().get(pseudonymeModerateur);
+        if (m == null) {
+			throw new OperationImpossible("Membre avec ce pseudonyme (" + pseudonymeModerateur + " ) n'existe pas dans le reseau (" + nomReseau + "). ");
+		}
+        Utilisateur u = utilisateurs.get(pseudoModUtilisateur);
         if (u == null) {
-            throw new OperationImpossible("utilisateur inexistant avec ce pseudo (" + pseudonyme + ")");
+            throw new OperationImpossible("utilisateur inexistant");
         }
         if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
             throw new OperationImpossible("le compte est bloqué");
@@ -135,17 +358,81 @@ public class MiniSocs {
         if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
             throw new OperationImpossible("le compte est desactivé");
         }
-        
-        ReseauSocial r = reseauxSociaux.get(nomReseau);
-        if (r != null) {
-            throw new OperationImpossible(nomReseau + "déjà un réseau");
+
+        if(m!=u.getMembres().get(pseudonymeModerateur)){
+            throw new OperationImpossible("le compte moderateur ne correspond pas au compte utilisateur"); 
         }
-        reseauxSociaux.put(nomReseau, new ReseauSocial(nomReseau, pseudoMembre));
-        u.ajouterMembre(pseudoMembre);
+    
+        if (!m.estModerateur()) {
+            throw new OperationImpossible("vous n'êtes pas modérateur, vous ne pouvez pas accepter un message");
+        }
+        
+        Message mess = rs.getMessages().get(idMessage);
+        if (mess == null) {
+            throw new OperationImpossible("Message avec cet id (" + idMessage + " ) n'existe pas. ");
+        }
+        if(!mess.getEtatMessage().equals(EtatMessage.ENATTENTE)){
+            throw new OperationImpossible("Message deja modéré ");
+        }
+        mess.modererMessage(acceptation); 
         assert invariant();
     }
-    
     /**
+     * Le modérateur peut fermer le réseau social d'un membre. 
+     * 
+     * @param pseudonyme   le pseudonyme de l'utilisateur qui va accepter le message.
+     * @param pseudoMembre   le pseudo membre de l'utilsateur.
+     * @param nomReseau     l'id du message à accepter 
+     * @throws OperationImpossible en cas de problème sur les pré-conditions.
+     */
+
+
+    public void fermerReseau (final String pseudoUtilisateur, final String pseudoMembre, final String nomReseau)
+            throws OperationImpossible {
+
+        if (pseudoUtilisateur == null || pseudoUtilisateur.isBlank()) {
+            throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
+        }
+        if (pseudoMembre == null || pseudoMembre.isBlank()) {
+            throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
+        }
+        if (nomReseau == null || nomReseau.isBlank()) {
+            throw new OperationImpossible("le nom de réseau ne peut pas être ni null ni vide");
+        }
+        
+        ReseauSocial r = reseauxSociaux.get(nomReseau);
+        if (r == null) {
+            throw new OperationImpossible("Reseau avec ce nom (" + nomReseau + " ) n'existe pas. ");
+        }
+        
+        if (!r.estOuvert()){
+            throw new OperationImpossible("le réseau est fermé");
+        }
+        Membre m = r.getMembres().get(pseudoMembre);
+        if (m == null) {
+            throw new OperationImpossible("Membre avec ce pseudonyme (" + pseudoMembre + " ) n'existe pas dans ce réseau. ");
+        }
+        if (!m.estModerateur()) {
+            throw new OperationImpossible("vous n'êtes pas modérateur, vous ne pouvez pas fermer le réseau");
+        }
+        Utilisateur u = utilisateurs.get(pseudoUtilisateur);
+        if (u == null) {
+            throw new OperationImpossible("utilisateur inexistant");
+        }
+        if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
+            throw new OperationImpossible("le compte est bloqué");
+        }
+        if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
+            throw new OperationImpossible("le compte est desactivé");
+        }
+        if(u.getMembres().get(pseudoMembre)!=m){
+            throw new OperationImpossible("le compte modérateur ne correspond pas à cet utilisateur");      
+        }
+        r.fermerReseau();
+        assert invariant();
+    }
+
+        /**
      * lister les reseauxSociaux.
      * 
      * @return la liste des noms des reseauxSociaux.
@@ -163,234 +450,6 @@ public class MiniSocs {
     public List<String> listerMembres(final String pseudonyme) {
         Utilisateur u = utilisateurs.get(pseudonyme);
         return u.listerMembres();
-    }
-    
-    
-    /**
-     * ajouter un membre au réseausocial.
-     * 
-     * @param nomReseau    le nom du réseau.
-     * @param pseudonyme   le pseudonyme de l'utilisateur qui ajoute un membre.
-     * @param monPseudoMembre le pseudo_membre de l'utilisateur sert à vérifier si il est modérateur
-     * @param pseudonymenouveau    le pseudonyme de l'utilisateur à ajouter comme membre.
-     * @param pseudoMembrenouveau   le pseudo_membre du membre à ajouter.
-     * @param etatnouveauMembre l'état du membre à ajouter.
-     * @throws OperationImpossible en cas de problème sur les pré-conditions.
-     */
-    public void ajouterMembreAuReseau(final String nomReseau, final String pseudonyme, final String monPseudoMembre, final String pseudonymenouveau, 
-            final String pseudoMembrenouveau, final boolean etatnouveauMembre)
-            throws OperationImpossible {
-        
-        if (nomReseau == null || nomReseau.isBlank()) {
-            throw new OperationImpossible("nomReseau ne peut pas être null ou vide");
-        }
-        if (pseudonyme == null || pseudonyme.isBlank()) {
-            throw new OperationImpossible("pseudonyme ne peut pas être null ou vide");
-        }
-        if (monPseudoMembre == null || monPseudoMembre.isBlank()) {
-            throw new OperationImpossible("mon pseudo_membre ne peut pas être null ou vide");
-        }
-        if (pseudonymenouveau == null || pseudonymenouveau.isBlank()) {
-            throw new OperationImpossible("pseudonyme de l'utilisateur à ajouter ne peut pas être null ou vide");
-        }
-        if (pseudoMembrenouveau == null || pseudoMembrenouveau.isBlank()) {
-            throw new OperationImpossible("pseudo_membre à ajouter ne peut pas être null ou vide");
-        }
-        if (etatnouveauMembre) {
-            throw new OperationImpossible("l'état du membre à ajouter ne peut pas être null");
-        }
-        Utilisateur u = utilisateurs.get(pseudonyme);
-        if (u == null) {
-            throw new OperationImpossible("utilisateur n'existe pas avec ce pseudo (" + pseudonyme + ")");
-        }
-        if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
-            throw new OperationImpossible("le compte est bloqué");
-        }
-        if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
-            throw new OperationImpossible("le compte est desactivé");
-        }
-        
-        //vérification de l'existance du réseau
-        ReseauSocial r = reseauxSociaux.get(nomReseau);
-        if (r == null) {
-            throw new OperationImpossible("réseau avec ce nom (" + nomReseau + ") n'existe pas!");
-        }
-        
-        //vérifier que l'utilisateur est bien membre de ce réseau en plus d'etre modérateur
-        Map<String, Membre> membres = r.getMembres();
-        Membre n = membres.get(monPseudoMembre);
-        if (n == null) {
-            throw new OperationImpossible("Membre avec ce pseudonyme (" + monPseudoMembre + " ) n'existe pas dans ce réseau. ");
-        }
-        if (!u.monEtatMembre(monPseudoMembre)) {
-            throw new OperationImpossible("vous n'êtes pas modérateur dans ce réseau, vous ne pouvez pas ajouter un membre");
-        }
-        
-        
-        Utilisateur v = utilisateurs.get(pseudonymenouveau);
-        if (v == null) {
-            throw new OperationImpossible("utilisateur à ajouter inexistant avec ce pseudo (" + pseudonymenouveau + ")");
-        }
-        
-        new Membre(pseudoMembrenouveau, etatnouveauMembre);
-        v.ajouterMembre(pseudoMembrenouveau);
-        r.ajouterMembre(pseudoMembrenouveau);
-        assert invariant();
-    }
-    
-    /**
-     * Poster un Message dans un reseau social existant.
-     * 
-     * @param contenu    le contenu du message.
-     * @param pseudonyme   le pseudonyme de l'utilisateur qui est membre et qui publie le message.
-     * @param pseudoMembre le pseudonyme du membre qui va publier le message dans le reseau .
-     * @param nomReseau le réseau dans lequel le message va etre publié 
-     * @throws OperationImpossible en cas de problème sur les pré-conditions.
-     */
-    public void posterMessage(final String contenu, final String pseudonyme, final String pseudoMembre, final String nomReseau)
-            throws OperationImpossible {
-        
-        if (nomReseau == null || nomReseau.isBlank()) {
-            throw new OperationImpossible("nomReseau ne peut pas être null ou vide");
-        }
-        if (pseudonyme == null || pseudonyme.isBlank()) {
-            throw new OperationImpossible("pseudonyme ne peut pas être null ou vide");
-        }
-        if (pseudoMembre == null || pseudoMembre.isBlank()) {
-            throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
-        }
-        if (contenu == null || contenu.isBlank()) {
-            throw new OperationImpossible("le contenu du message ne peut pas être null ou vide");
-        }
-        
-        Utilisateur u = utilisateurs.get(pseudonyme);
-        if (u == null) {
-            throw new OperationImpossible("utilisateur avec ce pseudo (" + pseudonyme + ") n'existe pas!");
-        }
-        if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
-            throw new OperationImpossible("le compte est bloqué");
-        }
-        if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
-            throw new OperationImpossible("le compte est desactivé");
-        }
-    
-        ReseauSocial r = reseauxSociaux.get(nomReseau);
-        if (r == null) {
-            throw new OperationImpossible("Réseau avec ce nom (" + nomReseau + " ) n'existe pas. ");
-        }
-        if (! r.getEtatReseau()) {
-            throw new OperationImpossible("le réseau est fermé");
-        }
-        
-        r.posterMessageReseauSocial(contenu, pseudoMembre);
-        
-        
-        assert invariant();
-    }
-    
-    /**
-     * Un modérateur accepte un Message (en ce moment posté et en attente), il devient alors visible.
-     * 
-     * @param pseudonyme   le pseudonyme de l'utilisateur qui va accepter le message.
-     * @param pseudoMembre   le pseudo membre de l'utilsateur.
-     * @param idMessage      l'id du message à accepter 
-     * @throws OperationImpossible en cas de problème sur les pré-conditions.
-     */
-    public void accepterMessage(final String pseudonyme, final String pseudoMembre, final String idMessage)
-            throws OperationImpossible {
-        
-        if (pseudonyme == null || pseudonyme.isBlank()) {
-            throw new OperationImpossible("pseudonyme ne peut pas être null ou vide");
-        }
-        if (pseudoMembre == null || pseudoMembre.isBlank()) {
-            throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
-        }
-        if (idMessage == null) {
-            throw new OperationImpossible("l'id du message ne peut pas être null");
-        }
-        
-        Utilisateur u = utilisateurs.get(pseudonyme);
-        if (u == null) {
-            throw new OperationImpossible("utilisateur inexistant avec ce pseudo (" + pseudonyme + ")");
-        }
-        if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
-            throw new OperationImpossible("le compte est bloqué");
-        }
-        if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
-            throw new OperationImpossible("le compte est desactivé");
-        }
-    
-        Map<String, Membre> membres = u.getMembre();
-        Membre n = membres.get(pseudoMembre);
-        if (n == null) {
-            throw new OperationImpossible("Membre avec ce pseudonyme (" + pseudoMembre + " ) n'existe pas dans ce réseau. ");
-        }
-        if (!u.monEtatMembre(pseudoMembre)) {
-            throw new OperationImpossible("vous n'êtes pas modérateur, vous ne pouvez pas accepter un message");
-        }
-        
-        Map<String, Message> MessagePosted = n.getMessagePosted();
-        Message mess = MessagePosted.get(idMessage);
-        if (mess == null) {
-            throw new OperationImpossible("Message avec cet id (" + idMessage + " ) n'existe pas. ");
-        }
-        
-        mess.accepterMessage();
-        
-        assert invariant();
-    }
-    /**
-     * Le modérateur peut fermer le réseau social d'un membre. 
-     * 
-     * @param pseudonyme   le pseudonyme de l'utilisateur qui va accepter le message.
-     * @param pseudoMembre   le pseudo membre de l'utilsateur.
-     * @param nomReseau     l'id du message à accepter 
-     * @throws OperationImpossible en cas de problème sur les pré-conditions.
-     */
-    public void fermerReseau (final String pseudonyme, final String pseudoMembre, final String nomReseau)
-            throws OperationImpossible {
-        
-        if (pseudonyme == null || pseudonyme.isBlank()) {
-            throw new OperationImpossible("pseudonyme ne peut pas être null ou vide");
-        }
-        if (pseudoMembre == null || pseudoMembre.isBlank()) {
-            throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
-        }
-        if (nomReseau == null || nomReseau.isBlank()) {
-            throw new OperationImpossible("le nom de réseau ne peut pas être ni null ni vide");
-        }
-        
-        Utilisateur u = utilisateurs.get(pseudonyme);
-        if (u == null) {
-            throw new OperationImpossible("utilisateur inexistant avec ce pseudo (" + pseudonyme + ")");
-        }
-        if (u.getEtatCompte().equals(EtatCompte.BLOQUE)) {
-            throw new OperationImpossible("le compte est bloqué");
-        }
-        if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
-            throw new OperationImpossible("le compte est desactivé");
-        }
-    
-        Map<String, Membre> membres = u.getMembre();
-        Membre n = membres.get(pseudoMembre);
-        if (n == null) {
-            throw new OperationImpossible("Membre avec ce pseudonyme (" + pseudoMembre + " ) n'existe pas dans ce réseau. ");
-        }
-        if (!u.monEtatMembre(pseudoMembre)) {
-            throw new OperationImpossible("vous n'êtes pas modérateur, vous ne pouvez pas fermer le réseau");
-        }
-        
-        ReseauSocial r = reseauxSociaux.get(nomReseau);
-        if (r == null) {
-            throw new OperationImpossible("Reseau avec ce nom (" + nomReseau + " ) n'existe pas. ");
-        }
-        
-        if (!r.getEtatReseau()){
-            throw new OperationImpossible("le réseau est fermé");
-        }
-        r.fermerReseauSocial();
-        assert invariant();
-        
     }
 
     /**

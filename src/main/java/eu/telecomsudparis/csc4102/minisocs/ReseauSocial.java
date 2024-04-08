@@ -1,4 +1,3 @@
-//CHECKSTYLE:OFF 
 package eu.telecomsudparis.csc4102.minisocs;
 
 import java.util.HashMap;
@@ -6,200 +5,112 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import eu.telecomsudparis.csc4102.util.OperationImpossible;
-
-
-
-/**
- * Cette classe réalise le concept d'utilisateur du système, à ne pas confondre
- * avec le concept de participant, sous-entendu à un réséeau social.
- * @author Sabrine Azaiez
- */
 public class ReseauSocial {
+    // Nom du réseau social
+    private final String nom;
     
-    /**
-     * le nom du réseau.
-     */
-    private  String nom;
-    
-    /**
-     * l'état du réseau.
-     */
+    // Indique si le réseau social est ouvert ou fermé
     private boolean estOuvert;
     
-    /**
-     * les membres
-     */
-    private final Map<String, Membre> Membres;
-
-    /**
-     * les messages
-     */
-    private final Map<String, Message> Messages;
+    // Liste des membres du réseau social, indexés par leur pseudonyme
+    private Map<String, Membre> membres;
     
-    /**
-     * construit un réseau.
-     * 
-     * @param nom le nom du réseau 
-     * @param pseudo du membre qui a creé le ReseauSocial  
-     */
-    public ReseauSocial(final String nom, final String pseudoMembre){
-        
+    // Liste des messages du réseau social, indexés par leur identifiant
+    private Map<Long, Message> messages;
+    
+    // Constructeur du réseau social
+    public ReseauSocial(String nom, boolean estOuvert) {
         if (nom == null || nom.isBlank()) {
-            throw new IllegalArgumentException("le nom de Reseau ne peut pas être null ou vide");
+            throw new IllegalArgumentException("Le nom du réseau ne peut pas être null ou vide");
         }
-        if (pseudoMembre == null || pseudoMembre.isBlank()) {
-            throw new IllegalArgumentException("le pseudo membre ne peut pas être null ou vide");
-        }
-        this.nom= nom;
-        this.estOuvert= true;
-        this.Membres= new HashMap<>();
-        //un nouveau membre (moderateur) se crée et il est dans le Reseau
-        Membres.put(pseudoMembre, new Membre(pseudoMembre, true));
-        this.Messages= new HashMap<>();
-        assert invariant();
-    }
-    
-    
-    /**
-     * ajoute un membre
-     * @throws OperationImpossible 
-     */
-    public void ajouterMembre(final String pseudoMembre) throws OperationImpossible {
-        Membre m = Membres.get(pseudoMembre);
-        if (m == null) {
-            throw new OperationImpossible("membre avec ce pseudo n'existe pas : " + pseudoMembre);
-        }
-        this.Membres.put(pseudoMembre, m);
+        this.nom = nom;
+        this.estOuvert = estOuvert;
+        this.membres = new HashMap<>();
+        this.messages = new HashMap<>();
         assert invariant();
     }
 
-
-
-    /**
-     * verification de l'invariant de la classe.
-     * 
-     * @return {@code true} si l'invariant est respecté.
-     */
-    
+    // Vérifie l'invariant du réseau social
     public boolean invariant() {
-        return nom != null && !nom.isBlank() && ((estOuvert == true) || (estOuvert == false)) ;
+        return nom != null && !nom.isBlank() && (estOuvert==true || estOuvert==false)
+        && membres!= null && messages!=null;
     }
 
-    /**
-     * obtient le nom du réseau.
-     * 
-     * @return le nom de ce réseau .
-     */
-    public String getNomReseau() {
-        return nom ;
+    // Retourne la liste des messages du réseau social
+    public List<String> listerMessages() {
+        return messages.values().stream().map(Message::toString).toList();
     }
 
-    /**
-     * obtenir l'état du réseau.
-     * 
-     * @return l'énumérateur.
-     */
-    public boolean getEtatReseau() {
+    // Retourne le nom du réseau social
+    public String getNom() {
+        return nom;
+    }
+
+
+    // Retourne vrai si le réseau social est ouvert, sinon faux
+    public boolean estOuvert() {
         return estOuvert;
     }
-    
-    /**
-     * liste les membres du ReseauSocial.
-     * 
-     * @return la liste des pseudoMembres des membres.
-     */
-    public List<String> listerMembres() {
-        return Membres.values().stream().map(Membre::toString).toList();
-    }
-    
-    /**
-     * getter pour les membres du ReseauSocial.
-     * 
-     * @return les membres du ReseauSocial.
-     */
+
+
+    // Retourne la liste des membres du réseau social
     public Map<String, Membre> getMembres() {
-        return Membres;
+        return this.membres;
     }
-    
-    /**
-     * liste les messages dans le ReseauSocial.
-     * 
-     * @return la liste des messages dans ce ReseauSocial.
-     */
-    public List<String> listerMessages() {
-        return Messages.values().stream().map(Message::toString).toList();
+
+    // Retourne la liste des messages du réseau social
+    public Map<Long, Message> getMessages() {
+        return messages;
     }
-    
-    /**
-     * creer un message et l'ajouter au reseau 
-     * @trows OperationImpossible 
-     */
-    public void posterMessageReseauSocial(final String contenu, final String pseudoMembre) throws OperationImpossible {
-        Membre m = Membres.get(pseudoMembre);
-        if (m == null) {
-            throw new OperationImpossible("Membre avec ce pseudonyme (" + pseudoMembre + " ) n'existe pas.");
-        }
-        
-        // associer un état au message en fonction de l'état du membre
-        EtatMessage etatMessage;
-        if (m.getEtatMembre()) 
-        {
-            etatMessage = EtatMessage.VISIBLE;
-        } 
-        else 
-        {
-            etatMessage = EtatMessage.ENATTENTE;
-        }
-                
-        //creer une instance de ce message avec l'etatMessage correspondant 
-        Message message=new Message(contenu, etatMessage);
-                
-        ajouterMessage(message);
-        
-        //ajouter le message comme posté du membre
-        m.ajouterMessagePosted(message);
+
+
+
+    // Ajoute un membre au réseau social
+    public void ajouterMembre(Membre membre) {
+        membres.put(membre.getPseudonymeMembre(), membre);
+        assert invariant();
     }
-    
-    /**
-     * ajoute un message existant au réseau 
-     */
+
+    // Ajoute un message au réseau social
     public void ajouterMessage(Message message) {
-        Messages.put(message.getContenu(), message);
+        messages.put(message.getId(), message);
+        assert invariant();
     }
-    
-    public void fermerReseauSocial () {
-        
-        if(estOuvert == true) {
-            
+
+    // Ferme le réseau social
+    public void fermerReseau() {
+        if (estOuvert) {
             estOuvert = false;
         }
-        
-
+        assert invariant();
     }
 
-
-    @Override
-    public String toString() {
-        return "ReseauSocial [nom=" + nom +  ", estOuvert=" + estOuvert + "]" ;
-    }
-
-
+    // Méthode de hachage
     @Override
     public int hashCode() {
         return Objects.hash(nom);
     }
 
-
+    // Méthode d'égalité
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null || !(obj instanceof ReseauSocial)) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
+        }
         ReseauSocial other = (ReseauSocial) obj;
         return Objects.equals(nom, other.nom);
+    }
+
+    // Méthode de représentation sous forme de chaîne de caractères
+    @Override
+    public String toString() {
+        return "ReseauSocial[" +
+               "nom='" + nom + '\'' +
+               ", estOuvert=" + estOuvert +
+               ", membres=" + membres +
+               ']';
     }
 }

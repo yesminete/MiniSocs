@@ -1,118 +1,148 @@
 //CHECKSTYLE:OFF 
 package eu.telecomsudparis.csc4102.minisocs;
 
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Map;
+import java.util.HashMap;
 
 
 public class Membre {
     /**
-     * le pseudonyme du membre.
+     * Le pseudonyme spécifique du membre dans le réseau social.
      */
-    private final String pseudoMembre;
+    private String pseudonymeMembre;
+
     /**
-     * état du membre (membre ou moderateur).
+     * Indique si le membre a des droits de modérateur dans le réseau social.
      */
     private boolean estModerateur;
+
     /**
+     * Indique le réseau social auquel ce membre fait partir.
+     */
+
+    final private ReseauSocial reseauSocial;
+     /**
      * les messages postés par le membre
      */
-    private final Map<String, Message> MessagePosted;
+    private final Map<Long, Message> messagePosted;
+
+
+
 
     /**
-     * construction d'un membre.
-     * 
-     * @param pseudoMembre le pseudonyme du membre dans le reseau.
+     * Construit un membre du réseau social avec les informations spécifiées.
+     * @param pseudonymeMembre le pseudonyme spécifique du membre dans le réseau social.
+     * @param estModerateur indique si le membre est modérateur.
+     * @param reseauSocial indique le réseau social auquel ce membre fait partir.
      */
-    public Membre(final String pseudoMembre, final boolean estModerateur) {
-        
-        if (pseudoMembre == null || pseudoMembre.isBlank()) {
-            throw new IllegalArgumentException("pseudoMembre ne doit pas être null ou vide");
+
+    public Membre(final String pseudonymeMembre, final boolean estModerateur, final ReseauSocial reseauSocial) {
+
+        // Vérification pseudonymeMembre est non null non vide , utilisateur non null
+        if (pseudonymeMembre == null || pseudonymeMembre.isBlank()) {
+            throw new IllegalArgumentException("pseudonymeMembre ne peut pas être null ou vide");
         }
-        this.pseudoMembre = pseudoMembre;
+        if(reseauSocial==null){
+            throw new IllegalArgumentException("Le réseau social ne peux pas null");
+        }
+        // Initialisation des attributs spécifiques à Membre
+        this.pseudonymeMembre = pseudonymeMembre;
         this.estModerateur = estModerateur;
-        this.MessagePosted= new HashMap<>();
-        
+        this.reseauSocial = reseauSocial;
+        this.messagePosted = new HashMap<>();
         assert invariant();
     }
-
-    /**
-     * vérifie l'invariant de la classe.
-     * 
-     * @return {@code true} si l'invariant est respecté.
-     */
+ 
     public boolean invariant() {
-        return pseudoMembre != null && !pseudoMembre.isBlank()
-                && ((estModerateur == true) || (estModerateur == false));
+        return  pseudonymeMembre != null && !pseudonymeMembre.isBlank() && 
+               reseauSocial != null 
+               && messagePosted != null
+               && ((estModerateur == true) || (estModerateur == false));
     }
 
     /**
-     * obtient le pseudonyme.
+     * Obtient le pseudonyme spécifique du membre.
      * 
-     * @return le pseudonyme.
+     * @return le pseudonyme spécifique du membre.
      */
-    public String getpseudoMembre() {
-        return pseudoMembre;
+    public String getPseudonymeMembre() {
+        return pseudonymeMembre;
     }
 
     /**
-     * le status du membre.
+     * Définit le pseudonyme spécifique du membre.
      * 
-     * @return l'énumérateur.
+     * @param pseudonymeMembre le nouveau pseudonyme spécifique du membre.
      */
-    public boolean getEtatMembre() {
+    public void setPseudonymeMembre(String pseudonymeMembre) {
+        this.pseudonymeMembre = pseudonymeMembre;
+    }
+
+    /**
+     * Vérifie si le membre est modérateur.
+     * 
+     * @return {@code true} si le membre est modérateur, sinon {@code false}.
+     */
+    public boolean estModerateur() {
         return estModerateur;
+    }
+
+    /**
+     * Définit le statut de modérateur du membre.
+     * 
+     * @param estModerateur le nouveau statut de modérateur du membre.
+     */
+    public void setEstModerateur(boolean estModerateur) {
+        this.estModerateur = estModerateur;
+    }
+
+    /**
+     * Obtient le réseau social du membre.
+     * 
+     * @return Le reseauSocial du memre.
+     */
+    public ReseauSocial getReseauSocial() {
+        return reseauSocial;
     }
 
     /**
      * ajouter un message existant au membre 
      */
     public void ajouterMessagePosted(Message message) {
-        MessagePosted.put(message.getContenu(), message);
+        messagePosted.put(message.getId(), message);
     }
     
-    @Override
-    public int hashCode() {
-        return Objects.hash(pseudoMembre);
-    }
+
+
+    // does putting a variable with a value that can be changed in hashcode considered a bad practice ?
 
     @Override
-    public boolean equals(final Object obj) {
+    public int hashCode() {
+        return Objects.hash(pseudonymeMembre,reseauSocial.getNom() );
+    }
+//  ---------------------------------------------------
+    // You have a question over here //
+//  ----------------------------------------------------
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Membre)) {
+            return false;
+        }
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Membre)) {
-            return false;
-        }
         Membre other = (Membre) obj;
-        return Objects.equals(pseudoMembre, other.pseudoMembre);
-    }
-    
-    /**
-     * liste les messages postés du membre.
-     * 
-     * @return la liste des messages postés du membre.
-     */
-    public List<String> listerMessages() {
-        return MessagePosted.values().stream().map(Message::toString).toList();
-    }
-    
-    /**
-     * getter des messages postés du membre.
-     * 
-     * @return les messages postés du membre.
-     */
-    public Map<String, Message> getMessagePosted() {
-        return MessagePosted;
+        return Objects.equals(pseudonymeMembre, other.getPseudonymeMembre()) &&
+               Objects.equals(this.getReseauSocial().getNom(), other.getReseauSocial().getNom());
     }
 
-    @Override
-    public String toString() {
-        return "Membre [pseudoMembre=" + pseudoMembre 
-                + ", etatMembre=" + estModerateur + "]";
-    }
+	@Override
+	public String toString() { 
+		return "Membre [pseudonyme=" + pseudonymeMembre + 
+        ", est moderateur =" + estModerateur + 
+        ",réseau social = "+ reseauSocial.getNom() 
+        + "]";
+	}
 }
 

@@ -11,7 +11,7 @@ import eu.telecomsudparis.csc4102.minisocs.MiniSocs;
 import eu.telecomsudparis.csc4102.minisocs.Utilisateur;
 import eu.telecomsudparis.csc4102.util.OperationImpossible;
 
-class TestfermerReseauSocial {
+class TestfermerReseau {
     
     private MiniSocs miniSocs;
     private Utilisateur utilisateur;
@@ -44,7 +44,7 @@ class TestfermerReseauSocial {
         
         Assertions.assertTrue(miniSocs.listerUtilisateurs().stream().noneMatch(utilisateur -> utilisateur.contains(pseudonyme)));
          Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.fermerReseau(pseudonyme, pseudoMembre, nomReseau));
+             () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
     }
      
     //pseudonyme non null et non vide  
@@ -52,14 +52,14 @@ class TestfermerReseauSocial {
     @Test
     void fermerReseauTest2Jeu1() throws Exception {
          Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.fermerReseau(null, pseudoMembre, nomReseau));
+             () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
     }
         
         
     @Test
     void fermerReseauTest2Jeu2() throws Exception {
         Assertions.assertThrows(OperationImpossible.class,
-            () -> miniSocs.fermerReseau("", pseudoMembre, nomReseau));
+            () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
     }
     
     // Tester le compte de l'utilisateur non bloqué et non désactivé 
@@ -70,7 +70,7 @@ class TestfermerReseauSocial {
         Assertions.assertFalse(miniSocs.listerUtilisateurs().stream().filter(utilisateur -> utilisateur.contains(pseudonyme)).anyMatch (utilisateur -> utilisateur.contains(EtatCompte.DESACTIVE.toString())));
         Assertions.assertFalse(miniSocs.listerUtilisateurs().stream().filter(utilisateur -> utilisateur.contains(pseudonyme)).anyMatch (utilisateur -> utilisateur.contains(EtatCompte.BLOQUE.toString())));
         Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.fermerReseau(pseudonyme, pseudoMembre, nomReseau));
+                () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
     }
     
     // Tester si l'utilisateur est modérateur du réseau social 
@@ -78,7 +78,7 @@ class TestfermerReseauSocial {
     void fermerReseauTest4Jeu1() throws Exception {
         Assertions.assertFalse(utilisateur.listerMembres().stream().anyMatch(membres -> membres.contains(pseudoMembre) && membres.contains("true")));
         Assertions.assertThrows(OperationImpossible.class,
-               () -> miniSocs.fermerReseau(pseudonyme, pseudoMembre, nomReseau));
+               () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
     }
         
     //pseudoMembre non null et non vide  
@@ -86,14 +86,14 @@ class TestfermerReseauSocial {
     @Test
     void fermerReseauTest5Jeu1() throws Exception {
          Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.fermerReseau(pseudonyme, "", nomReseau));
+             () -> miniSocs.fermerReseau( pseudonyme,"", nomReseau));
     }
         
         
     @Test
     void fermerReseauTest5Jeu2() throws Exception {
         Assertions.assertThrows(OperationImpossible.class,
-            () -> miniSocs.fermerReseau(pseudonyme, null, nomReseau));
+            () -> miniSocs.fermerReseau(pseudonyme,null, nomReseau));
     }   
     
 
@@ -102,19 +102,15 @@ class TestfermerReseauSocial {
     void fermerReseauTest6Jeu1() throws Exception { 
          Assertions.assertTrue(miniSocs.listerreseauxSociaux().stream().noneMatch(reseau -> reseau.contains(nomReseau)));
          Assertions.assertThrows(OperationImpossible.class,
-                   () -> miniSocs.fermerReseau(pseudonyme, pseudoMembre, nomReseau));
+                   () -> miniSocs.fermerReseau(pseudonyme,pseudoMembre, nomReseau));
     }
     
     @Test
     void fermerReseauTest7Jeu1() throws Exception { 
         Assertions.assertTrue(miniSocs.listerreseauxSociaux().stream().noneMatch(reseau -> reseau.contains(nomReseau) && reseau.contains("true")));
         Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.fermerReseau(pseudonyme, pseudoMembre, nomReseau));
+             () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
     }
-    
-
-    
-    
     
 }
 	

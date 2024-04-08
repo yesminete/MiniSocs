@@ -26,9 +26,11 @@ create "__r:ReseauSocial__" as R
 m -> R++: r=creerReseauSocial(nomReseau,true)
 return
 create "__me:Membre__" as mem
-m ->mem ++ : me = creerMember(u,True,r)
+m ->mem ++ : me = creerMember(pseudonymeMembre,true,r)
 return
 m -> R++ : ajouterMembre(me)
+return
+m -> ui++ : ajouterMembre(me)
 return
 end
 end

@@ -2,143 +2,165 @@
 // CHECKSTYLE:OFF
 package eu.telecomsudparis.csc4102.minisocs.validation;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import eu.telecomsudparis.csc4102.minisocs.EtatCompte;
 import eu.telecomsudparis.csc4102.minisocs.MiniSocs;
-import eu.telecomsudparis.csc4102.minisocs.Utilisateur;
 import eu.telecomsudparis.csc4102.util.OperationImpossible;
 
 class TestPosterMessage {
     private MiniSocs miniSocs;
-    private Utilisateur utilisateur;
     private String contenu;
     private String nomReseau;
-    private String pseudonyme;
     private String pseudoMembre;
+    private String pseudoModerateur;
+    private String pseudoUtilisateur;
 
     @BeforeEach
     void setUp() {
         miniSocs = new MiniSocs("MiniSocs");
-        utilisateur = new Utilisateur("userX","nomX", "prenomX", "courrierlX");
         contenu = "contenu1";
         nomReseau = "reseauX";
-        pseudonyme = "userX";
-        pseudoMembre = "membreX";
-        
+        pseudoModerateur = "mod1";
+        pseudoUtilisateur = "uToAdd";
+        pseudoMembre = "newMember";
+        nomReseau = "r1";
+		assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoModerateur, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
+        assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoUtilisateur, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
+        assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoModerateur, pseudoModerateur, nomReseau), "creation reseau social a  échoué");
+        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoModerateur,pseudoModerateur, nomReseau, pseudoUtilisateur, pseudoMembre), "ajout membre a échoué");    
     }
 
     @AfterEach
     void tearDown() {
         miniSocs = null;
-        utilisateur=null;
         contenu = null;
         nomReseau = null;
-        pseudonyme = null;
+        pseudoModerateur = null;
         pseudoMembre = null;
     }
     
-
     @Test
-    void PosterMessageTest1Jeu1() throws Exception {
-        
-        Assertions.assertTrue(miniSocs.listerreseauxSociaux().stream().noneMatch(reseau -> reseau.contains(nomReseau)));
-         Assertions.assertThrows(OperationImpossible.class,
-                   () -> miniSocs.posterMessage(contenu, pseudonyme, pseudoMembre, nomReseau));
+    void posterMessageTest1Jeu1() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+        () -> miniSocs.posterMessage("",contenu, "", nomReseau));
     }
     
-    //tester le nom réseau s'il est non null et non vide 
     @Test
-    void PosterMessageTest2Jeu1() throws Exception {
+    void posterMessageTest1Jeu2() throws Exception {
         Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.posterMessage(contenu, pseudonyme, pseudoMembre, null));
+        () -> miniSocs.posterMessage(null,contenu, null, nomReseau));
     }
 
+
     @Test
-    void PosterMessageTest2Jeu2() throws Exception {
+    void posterMessageTest2Jeu1() throws Exception {
         Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.posterMessage(contenu, pseudonyme, pseudoMembre, ""));
+        () -> miniSocs.posterMessage(pseudoUtilisateur,contenu, "", nomReseau));
+    }
+    
+    @Test
+    void posterMessageTest2Jeu2() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+        () -> miniSocs.posterMessage(pseudoUtilisateur,contenu, null, nomReseau));
+    }
+    @Test
+    void posterMessageTest3Jeu1() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+        () -> miniSocs.posterMessage(pseudoUtilisateur,contenu, pseudoMembre, ""));
     }
 
-    //Ici si on trouve que le réseau danslequel on veut poster le message et ayant un nom nomReseau ayant un état différent de ouvert (nonMatch) alors exception s'eleve
     @Test
-    void PosterMessageTest3Jeu1() throws Exception {
-        Assertions.assertTrue(miniSocs.listerreseauxSociaux().stream().noneMatch(reseau -> reseau.contains(nomReseau) && reseau.contains("true")));
+    void posterMessageTest3Jeu2() throws Exception {
         Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.posterMessage(contenu, pseudonyme, pseudoMembre, nomReseau));
+        () -> miniSocs.posterMessage(pseudoUtilisateur,contenu, pseudoMembre, null));      
     }
-    
-    
-    // si aucun utilisateur ayant un pseudo "pseudonyme" n'est trouvé alors une exception s'éleve
+
     @Test
-    void PosterMessageTest4Jeu1() throws Exception {
-        Assertions.assertTrue(miniSocs.listerUtilisateurs().stream().noneMatch(utilisateur -> utilisateur.contains(pseudonyme)));
-         Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.posterMessage(contenu, pseudonyme, pseudoMembre, nomReseau));
-    }
-    
-    //si l'utilisateur avec le pseudonyme "pseudonyme" n'a pas un compte actif alors exception ! 
-    
-    @Test
-    void PosterMessageTest5Jeu1() throws Exception {
-        Assertions.assertTrue(miniSocs.listerUtilisateurs().stream().noneMatch(utilisateur -> utilisateur.contains(pseudonyme) && utilisateur.contains(EtatCompte.ACTIF.toString())));
+    void posterMessageTest4Jeu1() throws Exception {
+        miniSocs.getUtilisateurs().get(pseudoUtilisateur).desactiverCompte();
         Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.posterMessage(contenu, pseudonyme, pseudoMembre, nomReseau));
-    }
-    
-    //Tester si le pseudonyme non null et non vide 
-    
-    @Test
-    void PosterMessageTest6Jeu1() throws Exception {
-        Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.posterMessage(contenu, null , pseudoMembre, nomReseau));
+        () -> miniSocs.posterMessage(pseudoUtilisateur,contenu, pseudoMembre, nomReseau));    
     }
     
     @Test
-    void PosterMessageTest6Jeu2() throws Exception {
+    void posterMessageTest4Jeu2() throws Exception {
+        miniSocs.getUtilisateurs().get(pseudoUtilisateur).bloquerCompte();
         Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.posterMessage(contenu, "" , pseudoMembre, nomReseau));
+        () -> miniSocs.posterMessage(pseudoUtilisateur,contenu, pseudoMembre, nomReseau));    
     }
-    
-    //tester si le pseudoMembre non null et non vide 
     @Test
-    void PosterMessageTest7Jeu1() throws Exception {
+    void posterMessageTest4Jeu3() throws Exception {
         Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.posterMessage(contenu, pseudonyme , null, nomReseau));
+        () -> miniSocs.posterMessage("nonExisting",contenu, pseudoMembre, nomReseau));    
+    }
+
+    @Test
+    void posterMessageTest4Jeu4() throws Exception {
+        assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur("otherU", "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
+        Assertions.assertThrows(OperationImpossible.class,
+        () -> miniSocs.posterMessage("otherU",contenu, pseudoMembre, nomReseau));    
+    }
+
+    @Test
+    void posterMessageTest5Jeu1() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+        () -> miniSocs.posterMessage(pseudoUtilisateur,"", pseudoMembre, nomReseau));    
+    }
+    
+    void posterMessageTest5Jeu2() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+        () -> miniSocs.posterMessage(pseudoUtilisateur,null, pseudoMembre, nomReseau));    
+    }  
+
+    @Test
+    void posterMessageTest6Jeu1() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+        () -> miniSocs.posterMessage(pseudoUtilisateur,contenu, pseudoMembre, "noneExisting"));    
     }
     
     @Test
-    void PosterMessageTest7Jeu2() throws Exception {
+    void posterMessageTest6Jeu2() throws Exception {
+        miniSocs.getReseauxSociaux().get(nomReseau).fermerReseau();
         Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.posterMessage(contenu, pseudonyme , "", nomReseau));
+        () -> miniSocs.posterMessage(pseudoUtilisateur,contenu, pseudoMembre, nomReseau));    
+    }
+
+    @Test
+    void posterMessageTest7Jeu1() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+        () -> miniSocs.posterMessage(pseudoUtilisateur,contenu, "noneExisting", nomReseau));    
     }
     
-    // Tester si utilisateur est membre dans d'autre terme si le pseudoMembre existe donc si la methode 
-    //posterMessage prend cet argument pseudoMembre qui est inexistant une exception est levée. 
+    @Test
+    void posterMessageTest7Jeu2() throws Exception {
+        assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoModerateur, pseudoModerateur, "newR"), "creation reseau social a  échoué");
+        assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur("otherU", "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
+        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoModerateur,pseudoModerateur, "newR", "otherU", "otherM"), "ajout membre a échoué");     
+        Assertions.assertThrows(OperationImpossible.class,
+        () -> miniSocs.posterMessage("otherU",contenu,"otherM", nomReseau));    
+    }
+    
     @Test
     void PosterMessageTest8Jeu1() throws Exception {
-        Assertions.assertTrue(utilisateur.listerMembres().stream().noneMatch(membres -> membres.contains(pseudoMembre)));
-        Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.posterMessage(contenu, pseudonyme, pseudoMembre, nomReseau));
+        Assertions.assertTrue(miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().isEmpty());         
+        assertDoesNotThrow(() -> miniSocs.posterMessage(pseudoUtilisateur,contenu, pseudoMembre, nomReseau), "Poster message a échoué");
+        Assertions.assertFalse(miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().isEmpty());  
+        Assertions.assertEquals(1, miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().size());
+        Assertions.assertTrue(miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().get(0).contains("enAttente"));
+        Assertions.assertFalse(miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().get(0).contains("visible"));
+    } 
+    @Test
+    void PosterMessageTest9Jeu1() throws Exception {
+        Assertions.assertTrue(miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().isEmpty());         
+        assertDoesNotThrow(() -> miniSocs.posterMessage(pseudoModerateur,contenu, pseudoModerateur, nomReseau), "Poster message a échoué");
+        Assertions.assertFalse(miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().isEmpty());  
+        Assertions.assertEquals(1, miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().size());
+        Assertions.assertFalse(miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().get(0).contains("enAttente"));
+        Assertions.assertTrue(miniSocs.getReseauxSociaux().get(nomReseau).listerMessages().get(0).contains("visible"));
     }
-    //Tester si le contenu non null et non vide 
-    
-        @Test
-        void PosterMessageTest9Jeu1() throws Exception {
-            Assertions.assertThrows(OperationImpossible.class,
-                    () -> miniSocs.posterMessage(null, pseudonyme, pseudoMembre, nomReseau));
-        }
-        
-        @Test
-        void PosterMessageTest9Jeu2() throws Exception {
-            Assertions.assertThrows(OperationImpossible.class,
-                    () -> miniSocs.posterMessage("", pseudonyme , pseudoMembre, nomReseau));
-        }
-    
-    
-    
-    
 }
