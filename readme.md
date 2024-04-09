@@ -1,8 +1,8 @@
 # Gestion de mini réseaux sociaux MiniSocs
 
 Binôme :
-* Prénom1 NOM1
-* Prénom2 NOM2
+* Yesmine LAJMI CHERIF
+* Sabrine AZAIEZ
 
 ## Syntaxe MarkDown
 
@@ -41,7 +41,7 @@ Voici ci-dessous le diagramme de cas d'utilisation avec les cas
 d'utilisation les plus importants (code
 [source](./Diagrammes/minisocs_uml_diag_cas_utilisation.pu)).
 
-![diagrammecasutilisation](./Diagrammes/minisocs_uml_diag_cas_utilisation.svg)
+![diagrammecasutilisation](./Diagrammes/minisocs_uml_diag_cas_utilisation.png)
 
 ### 1.2. Priorités, préconditions et postconditions des cas d'utilisation
 
@@ -55,7 +55,7 @@ l'ajout est donc supérieure ou égale à la priorité du retrait ;
 priorité de l'ajout est donc supérieure ou égale à la priorité du
 listage ;
 
-* il est *a priori* possible, c.-à-d. sans raison contraire, de
+* il est *a priori* possible, c.-à-d. sans raison contraire, decsc4102-projet
 démontrer la mise en œuvre d'un sous-ensemble des fonctionnalités du
 système, et plus particulièrement la prise en compte des principales
 règles de gestion, sans les retraits ou les listages ;
@@ -85,11 +85,67 @@ priorité HAUTE.
 - précondition : \
 ∧ pseudo bien formé (non null ∧ non vide) \
 ∧ le compte n'est pas bloqué \
+∧ le compte n'est pas désactivé \
 ∧ utilisateur avec ce pseudo existant
 - postcondition : le compte de l'utilisateur est désactivé
 
-NB : l'opération est idempotente.
+#### Ajouter membre (HAUTE)
+- précondition : \
+∧ pseudo utilisateur bien formé (non null ∧ non vide) \
+∧ pseudo moderateur bien formé (non null ∧ non vide) \
+∧ pseudo utilisateur à ajouter bien formé (non null ∧ non vide) \
+∧ pseudo nouveau membre bien formé (non null ∧ non vide) \
+∧ nom réseau bien formé (non null ∧ non vide) \
+∧ Le réseau existe ^le réseau est ouvert \
+∧ Le modérateur existe (posséde un compte sur MiniSoc) ∧  le compte du modérateur est actif ^ L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére ^ le compte modérateur correspond au compte utilisateur \
+∧ utilisateur(à ajouter) (existe ∧ le compte est actif ∧ n'est pas dans le réseau) \
+∧ Le pseudo de ce nouveau membre n'existe pas sur le réseau 
+ 
+- postcondition : \
+∧ membre créé et ajouté au réseau// Vérification qu'au moins un membre est modérateur.
 
+#### Modérer les messages (HAUTE)
+
+- précondition : \
+∧ pseudoUtilisateurModerateur!=null && pseudoUtilisateurModerateur!=vide \
+∧ pseudonymeModerateur!=null && pseudonymeModerateur!=vide\
+∧ nomReseau !=null && nomReseau!=vide \
+∧ idMessage!=null\
+∧ Le compte utilisateur du moderateur existe ^ actif ^ le profil modérateur correspond à cet utilisateur\
+∧ L'utilisateur a les droits de modération de ce réseau\
+∧ réseau existe && reseau ouvert \
+∧ Le message fait partie de ce réseau\
+∧ message en attente de modération \
+- postcondition : \
+∧ Si le modérateur accepte le message il sera visible dans le réseau \
+∧ Sinon si le modérateur refuse le message, il aura le statut non accepté et reste non visible dans le réseau
+
+#### Poster Message (HAUTE)
+- précondition : \
+∧ pseudonomUtilisateur != null && pseudonomUtilisateur!=vide \
+∧ pseudonomMembre != null && pseudonomMembe!=vide \
+∧ nomReseau!=null && nomRéseau!=vide \
+∧ utilisateur exite et Le compte de l'utilisateur est ACTIF\
+∧ reseau existe et non ferme/
+∧ contenu non null ∧ contenu non vide \
+∧ l'utilisateur est membre de ce reseau \
+∧ Postcondition : \
+∧ Si le membre est un modérateur le message est publié \
+∧ Si non le message est en attente de modération
+
+#### Créer réseau social (HAUTE)
+- précondition : \
+^ pseudonymeUtilisateur!= null && pseudonymeUtilisateur!= vide \
+^ pseudonymeMembre!= null  && pseudonymeMembre!= vide \
+^ nomReseau!=null && nomRéseau!=vide\
+^ Utilisateur existe \
+^ Etat du compte utilisateur Actif \
+^ Reseau n'existe pas \
+∧ postcondition : \
+∧ Le réseau est créé \
+∧ Un membre est créer avec droit de modération et ajouté à ce réseau
+
+NB : l'opération est idempotente.
 #### Autres cas d'utilisation et leur priorité respective
 
 - Retirer un utilisateur (basse)
@@ -98,13 +154,23 @@ NB : l'opération est idempotente.
 
 - Lister les utilisateurs (moyenne)
 
+- Débloquer le compte d'un utilisateur (basse)
+
+- Promotion membre (moyenne) 
+
+- Cacher message (moyenne)
+
+- Configurer compte (basse)
+
+- Activer son compte (moyenne)
+
 ## 2. Préparation des tests de validation des cas d'utilisation
 
 #### Ajouter un utilisateur (HAUTE)
 
 |                                                     | 1 | 2 | 3 | 4 | 5 | 6 |
 |:----------------------------------------------------|:--|:--|:--|---|---|---|
-| pseudo bien formé (non null ∧ non vide)              | F | T | T | T | T | T |
+| pseudo bien formé (non null ∧ non vide)             | F | T | T | T | T | T |
 | nom bien formé  (non null ∧ non vide)               |   | F | T | T | T | T |
 | prénom bien formé  (non null ∧ non vide)            |   |   | F | T | T | T |
 | courriel bien formé (respectant le standard RFC822) |   |   |   | F | T | T |
@@ -124,13 +190,77 @@ conditions.
 
 |                                          | 1 | 2 | 3 | 4 |
 |:-----------------------------------------|:--|:--|:--|:--|
-| pseudo bien formé (non null ∧ non vide)   | F | T | T | T |
+| pseudo bien formé (non null ∧ non vide)  | F | T | T | T |
 | le compte n'est pas bloqué               |   | F | T | T |
 | utilisateur avec ce pseudo existant      |   |   | F | T |
 |                                          |   |   |   |   |
 | le compte de l'utilisateur est désactivé | F | F | F | T |
 |                                          |   |   |   |   |
 | nombre de tests dans le jeu de tests     | 2 | 1 | 1 | 1 |
+
+#### Ajouter membre (HAUTE)
+|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|
+| pseudo utilisateur bien formé (non null ∧ non vide)  | F | T | T | T | T | T | T | T | T | T | T |
+| pseudo moderateur bien formé (non null ∧ non vide)  |   | F | T | T | T | T | T | T | T | T | T |
+| pseudo utilisateur à ajouter bien formé (non null ∧ non vide)  |  |  | F | T | T | T | T | T | T | T | T | T |
+| pseudo nouveau membre bien formé (non null ∧ non vide)  |   |   |   | F | T | T | T | T | T | T | T |
+| nom réseau bien formé (non null ∧ non vide)   |   |   |  |  | F | T | T | T | T | T | T |
+| Le réseau existe ^le réseau est ouvert |   |   |   |    |  |  F | T | T | T | T | T |
+| Le modérateur posséde un compte actif sur MiniSoc ^ le compte modérateur correspond au utilisateur |   |   |   |   |   |  | F | T | T | T | T |
+| L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére  |   |   |   |   |  |  |  | F | T | T | T |
+| utilisateur(à ajouter) (existe ∧ le compte est actif ∧ n'est pas dans le réseau) |   |   |   |   |   |    |   |  | F | T | T |
+|Le pseudo de ce nouveau membre n'existe pas sur le réseau     |   |   |   |   |   |    |   |  |  | F | T |
+|   membre créé et ajouté au réseau et ajouté a la liste des membres de l'utilisateur | F  | F  | F  | F  | F  | F  | F  | F  |  F | F | T |
+ nombre de test dans le jeu de test | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 3 | 4 | 1 | 1 |
+
+#### Modérer les messages (HAUTE)
+
+|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|
+|pseudoUtilisateurModerateur!=null && pseudoUtilisateurModerateur!=vide                                                                                            | F | T | T | T | T | T | T | T | T | T | T |
+| pseudonymeModerateur!=null && pseudonymeModerateur!=vide                                                                                                   |   | F | T | T | T | T | T | T | T | T | T | 
+| nomReseau !=null && nomReseau!=vide      |   |   | F | T | T | T | T | T | T | T | T | 
+| idMessage!=null                          |   |   |   | F | T | T | T | T | T | T | T | 
+| Le compte utilisateur du moderateur existe ^ actif ^ le profil modérateur correspond à cet utilisateur               |   |   |   |   | F | T | T | T | T | T | T |
+|L'utilisateur a les droits de modération de ce réseau ^ l'utilisateur est membre de ce réseau                               |   |   |   |   |   | F | T | T | T | T | T |
+|réseau existe && reseau ouvert                                     |   |   |   |   |   |   | F | T | T | T | T |
+|Le message fait partie de ce réseau       |   |   |   |   |   |   |   | F | T | T | T |
+|message accepté                           |   |   |   |   |   |   |   |   |   | F | T |
+| message visible dans le réseau           | F | F | F | F | F | F | F | F | F | F | T |
+| message rejeté                           | F | F | F | F | F | F | F | F | F | T | F |
+| nombre de tests dans le jeu de tests     | 2 | 2 | 2 | 1 | 4 | 2 | 2 | 2 | 3 | 1 | 1 |
+
+#### Poster Message (HAUTE) 
+
+|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|:--|:--|
+| pseudonomUtilisateur != null && pseudonomUtilisateur!=vide     | F | T | T | T | T | T | T | T | T |
+| pseudonomMembre != null && pseudonomMembe!=vide     |  | F | T | T | T | T | T | T | T |
+| nomReseau!=null && nomRéseau!=vide       |   |   | F | T | T | T | T | T | T |
+| utilisateur exite && Le compte de l'utilisateur est ACTIF  && compte membre correspond à l'utilisateur                 |   |   |   | F | T | T | T | T | T |
+| contenu non null ∧ contenu non vide                                       |   |   |   |   | F | T | T | T | T |
+| reseau existe ^ ouvert                   |   |   |   |   |   | F | T | T | T |
+|  l'utilisateur est membre de ce reseau                                     |   |   |   |   |   |   | F | T | T |
+|  l'utilisateur est modérateur de ce reseau                                     |   |   |   |   |   |   |   | F | T |
+| le message est en attente de modération  | F | F | T | F | F | F | F | T | F |
+| le message est publié                    | F | F | T | F | F | F | F | F | T |
+| nombre de tests dans le jeu de tests     | 2 | 2 | 2 | 4 | 2 | 2 | 2 | 1 | 1 |
+
+#### Créer réseau social (HAUTE)
+
+
+|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|
+| pseudonymeUtilisateur!= null && pseudonymeUtilisateur!= vide | F  | T | T | T | T | T | T |
+| pseudonymeMembre!= null && pseudonymeMembre!= vide | |  F | F | T | T | T | T | T |
+| nomReseau!=null && nomRéseau!=vide   |   |   | F  | T | T | T | T |
+| Utilisateur existe |   |   |   |  F | T |  T | T |
+| Etat du compte utilisateur Actif |   |   |   |   |   F | T | T |
+| Reseau n’existe pas |   |   |   |   |  | F | T |
+| Le réseau est créé | F | F | F | F | F | F  | T |
+| Un membre est créer avec droit de modération et ajouté à ce réseau | F | F | F | F | F | F  | T |
+| nombre de tests dans le jeu de tests     | 2 | 2 | 2 | 1 | 2 | 1 | 1 | 
 
 # 3. Conception
 
@@ -174,7 +304,7 @@ UML avec PlantUML est disponible à l'adress suivante :
 Version sans les notifications
 ([source](./Diagrammes/minisocs_uml_diag_classes_sans_notif.pu)).
 
-![diagrammeclasses](./Diagrammes/minisocs_uml_diag_classes_sans_notif.svg)
+![diagrammeclasses](./Diagrammes/minisocs_uml_diag_classes_sans_notif.png)
 ([source](./Diagrammes/minisocs_uml_diag_classes_sans_notif.pu))
 
 ## 3.4. Diagrammes de séquence
@@ -198,10 +328,21 @@ Version recommandée
 Version simplifiée
 ([source](./Diagrammes/minisocs_uml_diag_seq_ajouter_utilisateur_version_simplifiee.pu)).
 
+#### Ajouter membre (HAUTE)
 
 
-![diagrammeséquenceajouterutilisateursimplifié](./Diagrammes/minisocs_uml_diag_seq_ajouter_utilisateur_version_simplifiee.svg)
-([source](./Diagrammes/minisocs_uml_diag_seq_ajouter_utilisateur_version_simplifiee.pu))
+![diagrammeséquenceajoutermembre](./Diagrammes/minisocs_uml_diag_seq_ajouter_membre.png)
+([source](./Diagrammes/minisocs_uml_diag_seq_ajouter_membre.pu))
+
+#### Poster message (HAUTE)
+
+![diagrammeséquencepostermessage](./Diagrammes/minisocs_uml_diag_seq_poster_message.png)
+([source](./Diagrammes/minisocs_uml_diag_seq_poster_message.pu))
+
+#### Créer Réseau (HAUTE)
+
+![diagrammeséquencecréerréseau](./Diagrammes/minisocs_uml_diag_seq_creer_reseau_social.png)
+([source](./Diagrammes/minisocs_uml_diag_seq_creer_reseau_social.pu))
 
 # 7. Diagrammes de machine à états et invariants
 
@@ -235,6 +376,7 @@ Diagramme ([source](./Diagrammes/minisocs_uml_diag_machine_a_etats_utilisateur.p
 ![diagrammemachineaétatsutilisateur](./Diagrammes/minisocs_uml_diag_machine_a_etats_utilisateur.svg)
 ([source](./Diagrammes/minisocs_uml_diag_machine_a_etats_utilisateur.pu))
 
+
 ### 7.1.2. Fiche de la classe
 
 Voici tous les attributs de la classe :
@@ -255,6 +397,34 @@ Voici tous les attributs de la classe :
 ∧ EmailValidator.getInstance().isValid(courriel)
 ∧ etatCompte != null
 ```
+
+## 7.2. Classe Message
+
+### 7.2.1. Diagramme de machine à états
+
+Diagramme ([source](./Diagrammes/minisocs_uml_diag_machine_a_etats_message.pu)).
+
+![diagrammemachineaétatsmessage](./Diagrammes/minisocs_uml_diag_machine_a_etats_message.png)
+([source](./Diagrammes/minisocs_uml_diag_machine_a_etats_message.pu))
+
+### 7.2.2. Fiche de la classe:
+Voici tous les attributs de la classe:
+(Rq: on a choisi une relation unidirectionnelle entre la classe membre et la classe message pour des raisons de simplifications de meme pour la classe Réseau social)
+```
+-Long id
+-String contenu 
+-LocalDateTime date
+-EtatMessage etatMessage 
+```
+
+### 7.2.3. Invariant
+```
+∧ contenu != null ∧ !contenu.isBlank()
+∧ etatMessage != null
+∧ id!=null
+∧ date!=null
+```
+
 
 # 8 Préparation des tests unitaires
 
@@ -295,6 +465,81 @@ enfin une chaîne de caractères qui n'est pas une adresse courriel.
 | nombre de tests dans le jeu de tests | 1   | 2   |
 
 Deux tests dans le jeu de tests 2 pour l'idempotence.
+
+## 8.2. Opérations de la classe message
+
+### Opération constructeur
+
+|                                              | 1   | 2   |
+|:---------------------------------------------|:----|:----|
+| contenu bien formé (non null ∧ non vide)     | F   | T   |
+| contenu' = contenu                           | F   | T   |
+| etatMessage' = ENATTENTE                     | F   | T   |
+| id' = lastIdUsed                             | F   | T   |
+| date' =localDateTime()                       | F   | T   |
+| levée d'un exception                         | oui | non |
+|                                              |     |     |
+| nombre de tests dans le jeu de tests         | 2   |  1  |
+
+
+
+
+### Opération modererMessage
+
+|                                      | 1   | 2   | 3   |
+|:-------------------------------------|:----|:----|:----|
+| status = ENATTENTE                   | F   | T   | T   |
+| Acceptation                          |     | F   | T   |
+| status' = VISIBLE                    |     | F   | T   |
+| status' = REJETÉ                     |     | T   | F   |
+| levée d'une exception                | non | non |non  |
+|                                      |     |     |     |
+| nombre de tests dans le jeu de tests | 6   | 1   | 1   |
+
+
+
+### Opération rendreMessageVisible
+
+|                                      | 1   | 2   |
+|:-------------------------------------|:----|:----|
+| status = CACHÉ                       | F   | T   |
+|                                      |     |     |
+| status' = VISIBLE                    |     | T   |
+|                                      |     |     |
+| levée d'une exception                | non | non |
+|                                      |     |     |
+| nombre de tests dans le jeu de tests | 3   | 1   |
+
+
+
+### Opération CacherMessage
+|                                      | 1   | 2   |
+|:-------------------------------------|:----|:----|
+| status = VISIBLE                     | F   | T   |
+|                                      |     |     |
+| status' = CACHÉ                      |     | T   |
+|                                      |     |     |
+| levée d'une exception                | oui | non |
+|                                      |     |     |
+| nombre de tests dans le jeu de tests | 1   | 1   |
+
+
+### Opération refuserMessage
+
+|                                      | 1   | 2   |
+|:-------------------------------------|:----|:----|
+| status = ENATTENTE                   | F   | T   |
+|                                      |     |     |
+| status' = REJETE                     |     | T   |
+|                                      |     |     |
+| levée d'une exception                | oui | non |
+|                                      |     |     |
+| nombre de tests dans le jeu de tests | 1   | 1   |
+
+
+
+
+
 
 ---
 FIN DU DOCUMENT

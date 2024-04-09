@@ -12,24 +12,69 @@ skinparam class {
 }
 
 'Classes, énumérations, etc.'
-class MiniSocs {
-  - nom: String
+class ReseauSocial {
+  -nom: String
+  -estOuvert: Bool
+  -fermerReseau()
+  -ajouterMembre(Membre)
+  -ajouterMessage(Message)
 }
+
+
 class Utilisateur {
-  - pseudonyme: String
-  - nom: String
-  - prénom: String
-  - courriel: String
-  - etatCompte: ÉtatCompte
+  -id: Integer
+  -nom: String
+  -prenom: String
+  -adresseMail: String
+  -etatCompte: EtatCompte
+  -pseudonyme: String
+  -activerCompte()
+  -desactiverCompte()
+  -creerReseauSocial()
 }
-enum ÉtatCompte <<enum>> {
+
+
+class Membre{
+  -pseudoMembre : String
+  -estModerateur : Bool
+  -promouvoirMembre()
+}
+
+class Message{
+  -contenu: String
+  -statut: EtatMessage
+  -id : Long
+  -date : LocalDateTime
+  -modererMessage()
+  -cacherMessage()
+}
+
+class MiniSoc{
+-nomDuSysteme:String
+}
+
+enum EtatCompte <<enum>> {
   ACTIF
   DÉSACTIVÉ
   BLOQUÉ
 }
 
+enum EtatMessage <<enum>>{
+  ENATTENTE
+  ACCEPTE
+  REJETÉ
+  CACHÉ
+}
+
 'Associations, etc.'
-MiniSocs *--> "*" Utilisateur
+
+MiniSoc o-- Utilisateur
+MiniSoc o-- ReseauSocial
+Utilisateur "1"-->"*" Membre : devenir 
+Membre "1..*"--"1" ReseauSocial : associer à
+Membre "1"-->"..*" Message : poster
+ReseauSocial *--"..*" Message
+
 
 'Au besoin, aides pour le positionnement'
 

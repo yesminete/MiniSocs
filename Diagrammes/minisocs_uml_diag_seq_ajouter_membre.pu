@@ -1,0 +1,61 @@
+@startuml
+
+'Configuration charte graphique'
+hide footbox
+skinparam sequenceParticipantBackgroundColor White
+skinparam sequenceActorBackgroundColor White
+
+actor "__:utilisateur__" as m
+participant "__:MiniSocs__" as Mini
+participant "__r:RéseauSocial__" as RS
+participant "__m:Member__" as mod
+participant "__u:Utilisateur__" as u
+participant "__modu:Utilisateur__" as modu
+m -> Mini ++: ajouterMembre(pseudoModUtilisateur,pseudonymeModerateur, nomReseauSocial,pseudonymeUtilisateur,pseudonymeMembre)
+opt pseudoModUtilisateur!=null && pseudoModUtilisateur!=vide && pseudonymeModerateur!=null && pseudonymeModerateur != vide && nomReseauSocial!=null && nomReseauSocial!=vide && pseudonymeUtilisateur!=null && pseudonymeUtilisateur!=vide && pseudonymeMembre!=null && pseudonymeMembre!=vide
+Mini -> Mini ++: r = chercherReseauSocial(nomReseauSocial): ReseauSocial
+return
+opt r!=null
+Mini -> r ++ : test1 = estOuvert(r) : Boolean
+return
+opt test1 == true
+Mini -> r ++: m = chercherMembre(pseudonymeModerateur): Membre
+return
+opt m!=null
+ Mini -> Mini ++ : modu = chercherUtilisateur() 
+ return
+  Mini -> modu ++ : Etatmod = getEtat(modu)
+ return
+ Mini -> mod ++ : test2 = getEstModerateur(m):Boolean
+ return
+ opt test2==true && Etatmod == ACTIF
+Mini -> Mini ++ : u = chercherUtilisateur(pseudonymeUtilisateur) : Utilisateur
+return
+opt u!=null
+    Mini -> u ++ : etatU = getEtat()
+    return
+ 
+opt etatU==actif 
+Mini -> r ++ : nm = chercherMembre(pseudonymeMembre) : Membre
+return
+   Mini -> r ++ : membres = getMembres() : collection<membre>
+   return
+opt nm==null && u not in membres && r!= mm.getReseauSocial() for all mm : membres
+       	   create "__Membre__" as mem
+       	   Mini -> mem ++: creerMembre(pseudonymeMembre,false,r)
+	   return
+	   Mini -> r ++: ajouterMembre(nm)
+	   return
+	   Mini -> u ++: ajouterMembre(nm)
+	   return
+    end
+end
+end
+end
+end
+end
+end
+end
+return
+@enduml
+

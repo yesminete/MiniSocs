@@ -21,7 +21,7 @@ Contributor(s):
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.telecomsudparis.csc4102</groupId>
-  <artifactId>csc4102-minisocs-Nom1_Prenom1-Nom2_Prenom2</artifactId>
+  <artifactId>csc4102-minisocs-LAJMICHERIF_Yesmine-AZAIEZ_SABRINE</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>Mini réseaux sociaux</name>
@@ -159,6 +159,22 @@ You need a Maven version >= 3.8.6
           </execution>
         </executions>
       </plugin>
+
+<plugin>
+  <groupId>com.github.spotbugs</groupId>
+  <artifactId>spotbugs-maven-plugin</artifactId>
+  <version>4.8.2.0</version>
+  <dependencies>
+    <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs</artifactId>
+      <version>4.8.3</version>
+    </dependency>
+  </dependencies>
+</plugin>
+
+
       <!-- <plugin> -->
       <!--   <groupId>org.apache.maven.plugins</groupId> -->
       <!--   <artifactId>maven-eclipse-plugin</artifactId> -->

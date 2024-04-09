@@ -1,0 +1,40 @@
+@startuml
+
+'Diagramme de séquence (PLantUML)'
+
+'configuration charte graphique'
+hide footbox
+skinparam sequenceParticiantBackgroundColor White
+skinparam sequenceActorBachkgroundColor White
+
+'Déclaration des acteurs et des participants'
+actor "__:utilisateur__" as u
+participant "__:MiniSocs__" as m
+participant "__u:Utilisateur__" as ui
+u -> m ++: creerReseauSocial(pseudonymeUtilisateur,pseudonymeMembre,nomReseau)
+opt pseudonymeUtilisateur!= null && pseudonymeUtilisateur!=vide && pseudonymeMembre!= null && pseudonymeMembre!=vide && nomReseau!=null && nomReseau!=vide
+m -> m ++: r = chercherReseauSocial(nomReseau)
+return
+opt r==null
+m -> m ++: u = chercherUtilisateur(pseudonyme)
+return
+opt u!=null
+m-> ui ++ : etat == getEtatCompte()
+return
+opt etat==ACTIF
+create "__r:ReseauSocial__" as R
+m -> R++: r=creerReseauSocial(nomReseau,true)
+return
+create "__me:Membre__" as mem
+m ->mem ++ : me = creerMember(pseudonymeMembre,true,r)
+return
+m -> R++ : ajouterMembre(me)
+return
+m -> ui++ : ajouterMembre(me)
+return
+end
+end
+end
+end
+return
+@enduml

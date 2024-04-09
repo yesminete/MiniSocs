@@ -1,0 +1,32 @@
+@startuml
+
+'Diagramme de machine à états (PlantUML)'
+
+'Configuration charte graphique'
+
+'États et transitions'
+state EnCréation : entry : constructeur()
+state EnDestruction : entry : destructeur()
+state "ENATTENTE" as ENATTENTE
+state "REJETE" as REJETE
+
+state ACCEPTE {
+    [*] --> visible
+    visible --> caché : MessageCaché()/cacher()
+    caché --> visible : MessageVisible()/RendreVisible()
+}
+state c <<choice>>
+
+[*] -right-> EnCréation
+EnCréation -right-> c
+c --> ACCEPTE : [if estmodérateur == true]
+c --> ENATTENTE : [else]
+ENATTENTE--> ACCEPTE : Message Accepté\n/ Accepter()
+ENATTENTE--> EnDestruction : demande destruction
+ENATTENTE--> REJETE : Message rejeté\n/ Refuser()
+ACCEPTE --> EnDestruction : demande destruction
+REJETE --> EnDestruction : demande destruction
+EnDestruction-left-> [*]
+
+@enduml
+
