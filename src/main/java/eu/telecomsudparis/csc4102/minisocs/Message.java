@@ -1,5 +1,3 @@
-
-
 package eu.telecomsudparis.csc4102.minisocs;
 
 import java.util.Objects;
@@ -69,6 +67,7 @@ public class Message {
     public String getContenu() {
         return contenu;
     }
+    
     /**
      * obtient l'état du message.
      * 
@@ -79,22 +78,35 @@ public class Message {
         return etatMessage;
     }
 
+    /**
+     * @return l'id du message
+     */
     public long getId(){
         return id;
     }
     
+    /**
+     * @return le dernier id utilisé pour un message
+     */
     public long getLastIdUsed(){
         return lastIDused;
     }
+
+    
+    /**
+     * @param etat représente l'état du message de type EtatMessage
+     */
     public void setEtatMessage(EtatMessage etat){
         etatMessage = etat;
     }
     
-    /**
-     * moderer le message posté du membre.
-     */
     
-     public void modererMessage(boolean acceptation) { 
+     /**
+     * @param acceptation prend la valeur true si le message est accepté et 
+     * false si le message est refusé
+     */
+
+    public void modererMessage(boolean acceptation) { 
         if (etatMessage == EtatMessage.ENATTENTE)  { 
             if(acceptation){
                 setEtatMessage(EtatMessage.VISIBLE);         
@@ -104,13 +116,13 @@ public class Message {
             }
         }   
         assert invariant();
-    }
-
+    }   
+  
     
-     /**
-     * cacher le message posté du membre.
+    /**
+     * permet de caché un message VISIBLE
      */
-    
+
     public void cacherMessage() {
         if (etatMessage == EtatMessage.VISIBLE) {    
             setEtatMessage(EtatMessage.CACHÉ);
@@ -137,24 +149,19 @@ public class Message {
 
     @Override
     public int hashCode() {
-        return Objects.hash(contenu, date);
+        return Objects.hash(id);
     }
 
 
     @Override
     public boolean equals(final Object obj) {
+        if (obj == null || !(obj instanceof Message)) {
+            return false;
+        }
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-
         Message other = (Message) obj;
-        return Objects.equals(contenu, other.contenu) && Objects.equals(date, other.date);
+        return Objects.equals(id, other.id);
     }
-
 }

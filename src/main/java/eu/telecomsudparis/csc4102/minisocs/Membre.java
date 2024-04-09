@@ -115,15 +115,14 @@ public class Membre {
     
 
 
-    // does putting a variable with a value that can be changed in hashcode considered a bad practice ?
+    // On a mi pseudonymeMembre dans le hashcode en supposant que pseudonymeMembre
+    // est unique et invariant pour chaque reseau social (pour des raisons de simplicité)
 
     @Override
     public int hashCode() {
         return Objects.hash(pseudonymeMembre,reseauSocial.getNom() );
     }
-//  ---------------------------------------------------
-    // You have a question over here //
-//  ----------------------------------------------------
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Membre)) {

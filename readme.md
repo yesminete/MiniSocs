@@ -226,7 +226,6 @@ conditions.
 |L'utilisateur a les droits de modération de ce réseau ^ l'utilisateur est membre de ce réseau                               |   |   |   |   |   | F | T | T | T | T | T |
 |réseau existe && reseau ouvert                                     |   |   |   |   |   |   | F | T | T | T | T |
 |Le message fait partie de ce réseau       |   |   |   |   |   |   |   | F | T | T | T |
-|message en attente de modération          |   |   |   |   |   |   |   |   | F | T | T |
 |message accepté                           |   |   |   |   |   |   |   |   |   | F | T |
 | message visible dans le réseau           | F | F | F | F | F | F | F | F | F | F | T |
 | message rejeté                           | F | F | F | F | F | F | F | F | F | T | F |
@@ -475,7 +474,7 @@ Deux tests dans le jeu de tests 2 pour l'idempotence.
 |:---------------------------------------------|:----|:----|
 | contenu bien formé (non null ∧ non vide)     | F   | T   |
 | contenu' = contenu                           | F   | T   |
-| etatCompte' = ENATTENTE                      | F   | T   |
+| etatMessage' = ENATTENTE                     | F   | T   |
 | id' = lastIdUsed                             | F   | T   |
 | date' =localDateTime()                       | F   | T   |
 | levée d'un exception                         | oui | non |
