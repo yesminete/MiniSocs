@@ -107,8 +107,15 @@ priorité HAUTE.
 #### Modérer les messages (HAUTE)
 
 - précondition : \
+∧ pseudoUtilisateurModerateur!=null && pseudoUtilisateurModerateur!=vide \
+∧ pseudonymeModerateur!=null && pseudonymeModerateur!=vide\
+∧ nomReseau !=null && nomReseau!=vide \
+∧ idMessage!=null\
+∧ Le compte utilisateur du moderateur existe ^ actif ^ le profil modérateur correspond à cet utilisateur\
+∧ L'utilisateur a les droits de modération de ce réseau\
+∧ réseau existe && reseau ouvert \
+∧ Le message fait partie de ce réseau\
 ∧ message en attente de modération \
-∧ l'utilisateur qui modére le message a les droits de modérations  ∧ compte actif ∧ compte n'est pas bloqué \
 - postcondition : \
 ∧ Si le modérateur accepte le message il sera visible dans le réseau \
 ∧ Sinon si le modérateur refuse le message, il aura le statut non accepté et reste non visible dans le réseau
@@ -209,15 +216,21 @@ conditions.
 
 #### Modérer les messages (HAUTE)
 
-|                                          | 1 | 2 | 3 | 4 |
-|:-----------------------------------------|:--|:--|:--|:--|
-| message en attente de modération   | F | T | T | T |
-| l'utilisateur qui modére le message a les droits de modérations  ∧ compte active  ∧ compte n'est pas bloqué |   | F | T | T |
-| Si le modérateur accepte le message il sera visible dans le réseau      |  F |  F | F | T |
-|                                          |   |   |   |   |
-| Sinon si le modérateur refuse le message aura le statut non accepté et reste non visible dans le réseau | F | F | T | F  |
-|                                          |   |   |   |   |
-| nombre de tests dans le jeu de tests     | 1 | 3 | 1 | 1 |
+|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|
+|pseudoUtilisateurModerateur!=null && pseudoUtilisateurModerateur!=vide                                                                                            | F | T | T | T | T | T | T | T | T | T | T |
+| pseudonymeModerateur!=null && pseudonymeModerateur!=vide                                                                                                   |   | F | T | T | T | T | T | T | T | T | T | 
+| nomReseau !=null && nomReseau!=vide      |   |   | F | T | T | T | T | T | T | T | T | 
+| idMessage!=null                          |   |   |   | F | T | T | T | T | T | T | T | 
+| Le compte utilisateur du moderateur existe ^ actif ^ le profil modérateur correspond à cet utilisateur               |   |   |   |   | F | T | T | T | T | T | T |
+|L'utilisateur a les droits de modération de ce réseau ^ l'utilisateur est membre de ce réseau                               |   |   |   |   |   | F | T | T | T | T | T |
+|réseau existe && reseau ouvert                                     |   |   |   |   |   |   | F | T | T | T | T |
+|Le message fait partie de ce réseau       |   |   |   |   |   |   |   | F | T | T | T |
+|message en attente de modération          |   |   |   |   |   |   |   |   | F | T | T |
+|message accepté                           |   |   |   |   |   |   |   |   |   | F | T |
+| message visible dans le réseau           | F | F | F | F | F | F | F | F | F | F | T |
+| message rejeté                           | F | F | F | F | F | F | F | F | F | T | F |
+| nombre de tests dans le jeu de tests     | 2 | 2 | 2 | 1 | 4 | 2 | 2 | 2 | 3 | 1 | 1 |
 
 #### Poster Message (HAUTE) 
 
@@ -226,12 +239,11 @@ conditions.
 | pseudonomUtilisateur != null && pseudonomUtilisateur!=vide     | F | T | T | T | T | T | T | T | T |
 | pseudonomMembre != null && pseudonomMembe!=vide     |  | F | T | T | T | T | T | T | T |
 | nomReseau!=null && nomRéseau!=vide       |   |   | F | T | T | T | T | T | T |
-| utilisateur exite && Le compte de l'utilisateur est ACTIF  && compte membre correspond à l'utilisateur     |   |   |   | F | T | T | T | T | T |
+| utilisateur exite && Le compte de l'utilisateur est ACTIF  && compte membre correspond à l'utilisateur                 |   |   |   | F | T | T | T | T | T |
 | contenu non null ∧ contenu non vide                                       |   |   |   |   | F | T | T | T | T |
 | reseau existe ^ ouvert                   |   |   |   |   |   | F | T | T | T |
 |  l'utilisateur est membre de ce reseau                                     |   |   |   |   |   |   | F | T | T |
-|  l'utilisateur est un modérateur de ce reseau
-                                           |   |   |   |   |   |   |   | F | T |
+|  l'utilisateur est modérateur de ce reseau                                     |   |   |   |   |   |   |   | F | T |
 | le message est en attente de modération  | F | F | T | F | F | F | F | T | F |
 | le message est publié                    | F | F | T | F | F | F | F | F | T |
 | nombre de tests dans le jeu de tests     | 2 | 2 | 2 | 4 | 2 | 2 | 2 | 1 | 1 |
@@ -400,14 +412,18 @@ Diagramme ([source](./Diagrammes/minisocs_uml_diag_machine_a_etats_message.pu)).
 Voici tous les attributs de la classe:
 (Rq: on a choisi une relation unidirectionnelle entre la classe membre et la classe message pour des raisons de simplifications de meme pour la classe Réseau social)
 ```
--String content 
--EtatMessage Status 
+-Long id
+-String contenu 
+-LocalDateTime date
+-EtatMessage etatMessage 
 ```
 
 ### 7.2.3. Invariant
 ```
-content != null ∧ !content.isBlank()
-∧ status != null
+∧ contenu != null ∧ !contenu.isBlank()
+∧ etatMessage != null
+∧ id!=null
+∧ date!=null
 ```
 
 
@@ -455,36 +471,35 @@ Deux tests dans le jeu de tests 2 pour l'idempotence.
 
 ### Opération constructeur
 
-|                                              | 1   | 2   |3  |
-|:---------------------------------------------|:----|:----|:--|
-| contenu bien formé (non null ∧ non vide)     | F   | T   | T |
-| status non null                              |     | F   | T |
-|                                              |     |     |   |
-| contenu' = contenu                           | F   | F   | T |
-| status' = ENATTENTE OU ACCEPTE OU REJETE     | F   | F   | T |
-|                                              |     |     |   |
-| levée d'un exception                         | oui | oui |non|
-|                                              |     |     |   |
-| nombre de tests dans le jeu de tests         | 2   |  1  | 1 |
+|                                              | 1   | 2   |
+|:---------------------------------------------|:----|:----|
+| contenu bien formé (non null ∧ non vide)     | F   | T   |
+| contenu' = contenu                           | F   | T   |
+| etatCompte' = ENATTENTE                      | F   | T   |
+| id' = lastIdUsed                             | F   | T   |
+| date' =localDateTime()                       | F   | T   |
+| levée d'un exception                         | oui | non |
+|                                              |     |     |
+| nombre de tests dans le jeu de tests         | 2   |  1  |
 
 
 
 
-### Opération accepterMessage
+### Opération modererMessage
 
-|                                      | 1   | 2   |
-|:-------------------------------------|:----|:----|
-| status = ENATTENTE                   | F   | T   |
-|                                      |     |     |
-| status' = VISIBLE                    |     | T   |
-|                                      |     |     |
-| levée d'une exception                | oui | non |
-|                                      |     |     |
-| nombre de tests dans le jeu de tests | 1   | 1   |
+|                                      | 1   | 2   | 3   |
+|:-------------------------------------|:----|:----|:----|
+| status = ENATTENTE                   | F   | T   | T   |
+| Acceptation                          |     | F   | T   |
+| status' = VISIBLE                    |     | F   | T   |
+| status' = REJETÉ                     |     | T   | F   |
+| levée d'une exception                | non | non |non  |
+|                                      |     |     |     |
+| nombre de tests dans le jeu de tests | 6   | 1   | 1   |
 
 
 
-### Opération RendreMessageVisible
+### Opération rendreMessageVisible
 
 |                                      | 1   | 2   |
 |:-------------------------------------|:----|:----|
@@ -492,9 +507,9 @@ Deux tests dans le jeu de tests 2 pour l'idempotence.
 |                                      |     |     |
 | status' = VISIBLE                    |     | T   |
 |                                      |     |     |
-| levée d'une exception                | oui | non |
+| levée d'une exception                | non | non |
 |                                      |     |     |
-| nombre de tests dans le jeu de tests | 1   | 1   |
+| nombre de tests dans le jeu de tests | 3   | 1   |
 
 
 

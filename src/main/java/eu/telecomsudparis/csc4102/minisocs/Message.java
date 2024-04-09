@@ -83,6 +83,9 @@ public class Message {
         return id;
     }
     
+    public long getLastIdUsed(){
+        return lastIDused;
+    }
     public void setEtatMessage(EtatMessage etat){
         etatMessage = etat;
     }

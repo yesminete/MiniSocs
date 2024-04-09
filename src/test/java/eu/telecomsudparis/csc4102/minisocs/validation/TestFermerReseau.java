@@ -5,112 +5,143 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import eu.telecomsudparis.csc4102.minisocs.EtatCompte;
 import eu.telecomsudparis.csc4102.minisocs.MiniSocs;
-import eu.telecomsudparis.csc4102.minisocs.Utilisateur;
 import eu.telecomsudparis.csc4102.util.OperationImpossible;
 
-class TestfermerReseau {
+class TestFermerReseau {
     
     private MiniSocs miniSocs;
-    private Utilisateur utilisateur;
     private String nomReseau;
-    private String pseudonyme;
+    private String pseudoMod;
     private String pseudoMembre;
 
     @BeforeEach
     void setUp() {
         miniSocs = new MiniSocs("MiniSocs");
-        utilisateur = new Utilisateur("userX","nomX", "prenomX", "courrierlX");
-        nomReseau ="reseaux";
-        pseudonyme = "userX";
-        pseudoMembre = "membreX";
-        
+        pseudoMembre = "membre";
+        pseudoMod = "mod";
+        nomReseau = "monReseau";
+        assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoMod, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
+        assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoMembre, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
+		assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoMod,pseudoMod,nomReseau), "Creation reseau a échoué");
+        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoMod,pseudoMod,nomReseau,pseudoMembre,pseudoMembre),"Ajout membre a échoué");  
     }
 
     @AfterEach
     void tearDown() {
         miniSocs = null;
-        utilisateur=null;
         nomReseau = null;
-        pseudonyme = null;
+        pseudoMembre = null;
         pseudoMembre = null;
     }
     
-    
     @Test
     void fermerReseauTest1Jeu1() throws Exception {
-        
-        Assertions.assertTrue(miniSocs.listerUtilisateurs().stream().noneMatch(utilisateur -> utilisateur.contains(pseudonyme)));
-         Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
+        Assertions.assertThrows(OperationImpossible.class,
+             () -> miniSocs.fermerReseau( "",pseudoMod, nomReseau));
     }
      
     //pseudonyme non null et non vide  
     
     @Test
-    void fermerReseauTest2Jeu1() throws Exception {
+    void fermerReseauTest1Jeu2() throws Exception {
          Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
+             () -> miniSocs.fermerReseau( null,pseudoMod, nomReseau));
     }
         
         
+    @Test
+    void fermerReseauTest2Jeu1() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+            () -> miniSocs.fermerReseau( pseudoMod,"", nomReseau));
+    }
+    
     @Test
     void fermerReseauTest2Jeu2() throws Exception {
         Assertions.assertThrows(OperationImpossible.class,
-            () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
+            () -> miniSocs.fermerReseau( pseudoMod,null, nomReseau));
     }
-    
-    // Tester le compte de l'utilisateur non bloqué et non désactivé 
+
     @Test
     void fermerReseauTest3Jeu1() throws Exception {
-        
-        Assertions.assertTrue(miniSocs.listerUtilisateurs().stream().anyMatch(utilisateur-> utilisateur.contains(pseudonyme)));
-        Assertions.assertFalse(miniSocs.listerUtilisateurs().stream().filter(utilisateur -> utilisateur.contains(pseudonyme)).anyMatch (utilisateur -> utilisateur.contains(EtatCompte.DESACTIVE.toString())));
-        Assertions.assertFalse(miniSocs.listerUtilisateurs().stream().filter(utilisateur -> utilisateur.contains(pseudonyme)).anyMatch (utilisateur -> utilisateur.contains(EtatCompte.BLOQUE.toString())));
         Assertions.assertThrows(OperationImpossible.class,
-                () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
+            () -> miniSocs.fermerReseau( pseudoMod,pseudoMod, ""));
     }
-    
-    // Tester si l'utilisateur est modérateur du réseau social 
+
+        
+    @Test
+    void fermerReseauTest3Jeu2() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+            () -> miniSocs.fermerReseau( pseudoMod,pseudoMod, null));
+    }
+
     @Test
     void fermerReseauTest4Jeu1() throws Exception {
-        Assertions.assertFalse(utilisateur.listerMembres().stream().anyMatch(membres -> membres.contains(pseudoMembre) && membres.contains("true")));
         Assertions.assertThrows(OperationImpossible.class,
-               () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
+            () -> miniSocs.fermerReseau( pseudoMod,pseudoMod, "nonExisting"));
     }
-        
-    //pseudoMembre non null et non vide  
-    
+
+    @Test
+    void fermerReseauTest4Jeu2() throws Exception {
+        miniSocs.getReseauxSociaux().get(nomReseau).fermerReseau();
+        Assertions.assertThrows(OperationImpossible.class,
+            () -> miniSocs.fermerReseau( pseudoMod,pseudoMod, nomReseau));
+    }
+    // utilisateur existe et son compte est actif
     @Test
     void fermerReseauTest5Jeu1() throws Exception {
-         Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.fermerReseau( pseudonyme,"", nomReseau));
+        Assertions.assertThrows(OperationImpossible.class,
+            () -> miniSocs.fermerReseau( "nonExisting",pseudoMod,nomReseau ));
     }
-        
-        
+
     @Test
     void fermerReseauTest5Jeu2() throws Exception {
+        miniSocs.getUtilisateurs().get(pseudoMod).desactiverCompte();;
         Assertions.assertThrows(OperationImpossible.class,
-            () -> miniSocs.fermerReseau(pseudonyme,null, nomReseau));
-    }   
-    
-
-    //si aucun réseau ayant un pseudo "nomReseau" n'est trouvé alors une exception s'éleve
-    @Test
-    void fermerReseauTest6Jeu1() throws Exception { 
-         Assertions.assertTrue(miniSocs.listerreseauxSociaux().stream().noneMatch(reseau -> reseau.contains(nomReseau)));
-         Assertions.assertThrows(OperationImpossible.class,
-                   () -> miniSocs.fermerReseau(pseudonyme,pseudoMembre, nomReseau));
+            () -> miniSocs.fermerReseau( pseudoMod,pseudoMod,nomReseau ));
     }
-    
+    @Test
+    void fermerReseauTest5Jeu3() throws Exception {
+        miniSocs.getUtilisateurs().get(pseudoMod).bloquerCompte();
+        Assertions.assertThrows(OperationImpossible.class,
+            () -> miniSocs.fermerReseau( pseudoMod,pseudoMod,nomReseau ));
+    }
+
+
+    // moderateur fait partie de ce reseau, a des droits de modérations 
+    @Test
+    void fermerReseauTest6Jeu1() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+            () -> miniSocs.fermerReseau( pseudoMod,"nonExisting",nomReseau ));
+    }
+    @Test
+    void fermerReseauTest6Jeu2() throws Exception {
+        assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoMembre,pseudoMembre,"newR"), "Creation reseau a échoué");
+        Assertions.assertThrows(OperationImpossible.class,
+            () -> miniSocs.fermerReseau( pseudoMod,pseudoMod,"newR" ));
+    }
+    @Test
+    void fermerReseauTest6Jeu3() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+            () -> miniSocs.fermerReseau( pseudoMembre,pseudoMembre,nomReseau ));
+    }
+    // Le compte utilisateur correspond au compte utilisateur
+    @Test
+    void fermerReseauTest6Jeu4() throws Exception {
+        Assertions.assertThrows(OperationImpossible.class,
+            () -> miniSocs.fermerReseau( pseudoMembre,pseudoMod,nomReseau ));
+    }
     @Test
     void fermerReseauTest7Jeu1() throws Exception { 
-        Assertions.assertTrue(miniSocs.listerreseauxSociaux().stream().noneMatch(reseau -> reseau.contains(nomReseau) && reseau.contains("true")));
+		Assertions.assertEquals(1, miniSocs.listerReseaux().size());
+        Assertions.assertTrue(miniSocs.getReseauxSociaux().get(nomReseau).estOuvert());
+        assertDoesNotThrow(() -> miniSocs.fermerReseau(pseudoMod,pseudoMod,nomReseau), "fermeture réseau a échoué");
+        Assertions.assertEquals(1, miniSocs.listerReseaux().size());
+        Assertions.assertFalse(miniSocs.getReseauxSociaux().get(nomReseau).estOuvert());
         Assertions.assertThrows(OperationImpossible.class,
-             () -> miniSocs.fermerReseau( pseudonyme,pseudoMembre, nomReseau));
-    }
-    
+                () -> miniSocs.fermerReseau( pseudoMod,pseudoMod, nomReseau));
+    }    
 }
 	

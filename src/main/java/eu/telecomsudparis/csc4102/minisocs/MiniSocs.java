@@ -318,10 +318,12 @@ public class MiniSocs {
 	}
     
     /**
-     * Un modérateur accepte un Message (en ce moment posté et en attente), il devient alors visible.
+     * Un modérateur accepte un Message (en ce moment posté et en attente), si acceptation est true alors l'etatMessage devient VISIBLE
+     * si non l'étaMessage devient REJETÉ .
      * 
-     * @param pseudonyme   le pseudonyme de l'utilisateur qui va accepter le message.
-     * @param pseudoMembre   le pseudo membre de l'utilsateur.
+     * @param pseudonymeUtilisateur   le pseudonyme de l'utilisateur qui va accepter le message.
+     * @param pseudonymeModerateur   le pseudo membre de l'utilsateur.
+     * @param nomReseau le nom du reseau auquel appartient le moderateur
      * @param idMessage      l'id du message à accepter 
      * @throws OperationImpossible en cas de problème sur les pré-conditions.
      */
@@ -342,7 +344,10 @@ public class MiniSocs {
         
         ReseauSocial rs = reseauxSociaux.get(nomReseau);
         if(rs==null){
-            throw new OperationImpossible("reseau inexistan");
+            throw new OperationImpossible("reseau inexistant");
+        }
+        if(!rs.estOuvert()){
+            throw new OperationImpossible("Le réseau est fermé");
         }
         Membre m = rs.getMembres().get(pseudonymeModerateur);
         if (m == null) {
@@ -364,12 +369,12 @@ public class MiniSocs {
         }
     
         if (!m.estModerateur()) {
-            throw new OperationImpossible("vous n'êtes pas modérateur, vous ne pouvez pas accepter un message");
+            throw new OperationImpossible("vous n'êtes pas modérateur, vous ne pouvez pas moderer un message");
         }
         
         Message mess = rs.getMessages().get(idMessage);
         if (mess == null) {
-            throw new OperationImpossible("Message avec cet id (" + idMessage + " ) n'existe pas. ");
+            throw new OperationImpossible("Message avec cet id (" + idMessage + " ) n'existe pas dans le reseau. ");
         }
         if(!mess.getEtatMessage().equals(EtatMessage.ENATTENTE)){
             throw new OperationImpossible("Message deja modéré ");
@@ -380,7 +385,7 @@ public class MiniSocs {
     /**
      * Le modérateur peut fermer le réseau social d'un membre. 
      * 
-     * @param pseudonyme   le pseudonyme de l'utilisateur qui va accepter le message.
+     * @param pseudoUtilisateur   le pseudonyme de l'utilisateur qui va accepter le message.
      * @param pseudoMembre   le pseudo membre de l'utilsateur.
      * @param nomReseau     l'id du message à accepter 
      * @throws OperationImpossible en cas de problème sur les pré-conditions.

@@ -1,8 +1,6 @@
 // CHECKSTYLE:OFF
 package eu.telecomsudparis.csc4102.minisocs.unitaires;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import eu.telecomsudparis.csc4102.minisocs.EtatMessage;
 import eu.telecomsudparis.csc4102.minisocs.Message;
-import eu.telecomsudparis.csc4102.minisocs.MiniSocs;
 
 class TestMessage {
 
@@ -33,27 +30,15 @@ class TestMessage {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Message(""));
     }
 
-    @Test
-    void constructeurMessageTest2() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Message("contenu"));
-    }
-
 //Tester les postconditions afin de garantir que la classe Message initalise correctement les objets avec leurs états spécifiques
     @Test
-    void constructeurMessageTest3() {
+    void constructeurMessageTest2() {
         Message message = new Message("contenu");
         Assertions.assertNotNull(message);
         Assertions.assertEquals("contenu", message.getContenu());
         Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+        Assertions.assertEquals(message.getLastIdUsed()-1, message.getId());
     }
-    @Test
-    void constructeurMessageTest4() {
-        Message message = new Message("contenu");
-        Assertions.assertNotNull(message);
-        Assertions.assertEquals("contenu", message.getContenu());
-        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
-    }
-    
     
     /**On s'attend à ce qu'une IllegalStateException soit levée lors de la tentative d'acceptation du message, 
      * car un message refusé ne peut pas être accepté. C'est pourquoi cette assertion vérifie que cette exception 
@@ -61,76 +46,140 @@ class TestMessage {
      */
 
     @Test
-    void AccepterMessageTest1() {
+    void modererMessageTest1() {
             Message message = new Message("contenu");
             Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
-            message.modererMessage(false);
+            message.setEtatMessage(EtatMessage.REJETE);
+            message.modererMessage(true);
             Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
-            Assertions.assertThrows(IllegalStateException.class, () -> message.modererMessage(true));
     }
 
     @Test
-    void AccepterMessageTest2() {
+    void mdererMessageTest2() {
+        Message message = new Message("contenu");
+        Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+        message.setEtatMessage(EtatMessage.VISIBLE);
+        message.modererMessage(true);
+        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());  
+    }
+
+    @Test
+    void mdererMessageTest3() {
+        Message message = new Message("contenu");
+        Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+        message.setEtatMessage(EtatMessage.CACHÉ);
+        message.modererMessage(true);
+        Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());  
+    }
+
+    @Test
+    void modererMessageTest4() {
+            Message message = new Message("contenu");
+            Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+            message.setEtatMessage(EtatMessage.REJETE);
+            message.modererMessage(false);
+            Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
+    }
+
+    @Test
+    void mdererMessageTest5() {
+        Message message = new Message("contenu");
+        Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+        message.setEtatMessage(EtatMessage.VISIBLE);
+        message.modererMessage(false);
+        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());  
+    }
+
+    @Test
+    void modererMessageTest6() {
+        Message message = new Message("contenu");
+        Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+        message.setEtatMessage(EtatMessage.CACHÉ);
+        message.modererMessage(false);
+        Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());  
+    }
+
+    @Test
+    void mdererMessageTest7() {
+        Message message = new Message("contenu");
+        Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
+        message.modererMessage(false);
+        Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());  
+    }
+
+
+    @Test
+    void mdererMessageTest8() {
         Message message = new Message("contenu");
         Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
         message.modererMessage(true);
-        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
-        
+        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());  
     }
+
+   
     
     //Ici le message ne peut pas étre visible s'il est refusé ! donc levée d'une exception 
     
     @Test
-    void RendreMessageVisibleTest1() {
+    void rendreMessageVisibleTest1() {
         Message message = new Message("contenu");
-        Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
-        message.modererMessage(false);
-        Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
-        Assertions.assertThrows(IllegalStateException.class, () -> message.rendreVisibleMessage());
+        message.rendreVisibleMessage();
+        Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
     }
     
     @Test
-    void RendreMessageVisibleTest2() {
+    void rendreMessageVisibleTest2() {
         Message message = new Message("contenu");
-        Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
+        message.setEtatMessage(EtatMessage.REJETE);
+        Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
+    }
+    
+
+    @Test
+    void rendreMessageVisibleTest3() {
+        Message message = new Message("contenu");
+        message.setEtatMessage(EtatMessage.VISIBLE);
+        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
+    }
+
+    @Test
+    void rendreMessageVisibleTest4() {
+        Message message = new Message("contenu");
+        message.setEtatMessage(EtatMessage.CACHÉ);
         message.rendreVisibleMessage();
         Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
     }
-    
-    //Levé de l'exception lorsque le message est par exemple refusé et la méthode caché est appliquer !
-    
+
     @Test
-    void CacherMessageTest1() {
+    void cacherMessageTest1() {
         Message message = new Message("contenu");
-        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
-        message.modererMessage(false);
-        Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
-        Assertions.assertThrows(IllegalStateException.class, () -> message.cacherMessage());
+        message.cacherMessage();
+        Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
     }
     
     @Test
-    void CacherMessageTest2() {
+    void cacherMessageTest2() {
         Message message = new Message("contenu");
-        Assertions.assertEquals(EtatMessage.VISIBLE, message.getEtatMessage());
+        message.setEtatMessage(EtatMessage.CACHÉ);
         message.cacherMessage();
         Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
     }
     
-    //Levé de l'exception lorsque le message est par exemple caché et la méthode refuser est appliquer !
-    
     @Test
-    void RefuserMessageTest1() {
-            Message message = new Message("contenu");
-            Assertions.assertEquals(EtatMessage.ENATTENTE, message.getEtatMessage());
-            message.cacherMessage();
-            Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
-            Assertions.assertThrows(IllegalStateException.class, () -> message.modererMessage(false));
+    void cacherMessageTest3() {
+        Message message = new Message("contenu");
+        message.setEtatMessage(EtatMessage.REJETE);
+        message.cacherMessage();
+        Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
     }
+
+        
     @Test
-    void RefuserMessageTest2() {
-            Message message = new Message("contenu");
-            Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
-            message.modererMessage(false);
-            Assertions.assertEquals(EtatMessage.REJETE, message.getEtatMessage());
+    void cacherMessageTest4() {
+        Message message = new Message("contenu");
+        message.setEtatMessage(EtatMessage.VISIBLE);
+        message.cacherMessage();
+        Assertions.assertEquals(EtatMessage.CACHÉ, message.getEtatMessage());
     }
+
 }
