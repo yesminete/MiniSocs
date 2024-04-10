@@ -1,4 +1,3 @@
-
 //CHECKSTYLE:OFF 
 package eu.telecomsudparis.csc4102.minisocs;
 
@@ -42,6 +41,8 @@ public class Utilisateur {
      * les membres.
      */
     private final Map<String, Membre> membres;
+    
+
 
     
     /**
@@ -73,6 +74,7 @@ public class Utilisateur {
         this.membres = new HashMap<>();
         assert invariant();
     }
+    
 
     /**
      * vérifie l'invariant de la classe.
@@ -180,4 +182,3 @@ public class Utilisateur {
                 + courriel + ", etatCompte=" + etatCompte + "]";
     }
 }
-

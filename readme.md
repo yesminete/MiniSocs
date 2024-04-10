@@ -226,8 +226,9 @@ conditions.
 |L'utilisateur a les droits de modération de ce réseau ^ l'utilisateur est membre de ce réseau                               |   |   |   |   |   | F | T | T | T | T | T |
 |réseau existe && reseau ouvert                                     |   |   |   |   |   |   | F | T | T | T | T |
 |Le message fait partie de ce réseau       |   |   |   |   |   |   |   | F | T | T | T |
+|message en attente de modération          |   |   |   |   |   |   |   |   | F | T | T |
 |message accepté                           |   |   |   |   |   |   |   |   |   | F | T |
-| message visible dans le réseau           | F | F | F | F | F | F | F | F | F | F | T |
+| message visible et ajouté dans le réseau | F | F | F | F | F | F | F | F | F | F | T |
 | message rejeté                           | F | F | F | F | F | F | F | F | F | T | F |
 | nombre de tests dans le jeu de tests     | 2 | 2 | 2 | 1 | 4 | 2 | 2 | 2 | 3 | 1 | 1 |
 

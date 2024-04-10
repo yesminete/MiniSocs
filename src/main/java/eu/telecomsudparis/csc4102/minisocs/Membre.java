@@ -27,6 +27,10 @@ public class Membre {
      */
     private final Map<Long, Message> messagePosted;
 
+    /**
+     * Consommateur de notifications
+     */
+    private final MonConsommateur monConsommateur;
 
 
 
@@ -37,7 +41,7 @@ public class Membre {
      * @param reseauSocial indique le réseau social auquel ce membre fait partir.
      */
 
-    public Membre(final String pseudonymeMembre, final boolean estModerateur, final ReseauSocial reseauSocial) {
+    public Membre(final String pseudonymeMembre, final boolean estModerateur, final ReseauSocial reseauSocial , final MonConsommateur consommateur) {
 
         // Vérification pseudonymeMembre est non null non vide , utilisateur non null
         if (pseudonymeMembre == null || pseudonymeMembre.isBlank()) {
@@ -51,6 +55,7 @@ public class Membre {
         this.estModerateur = estModerateur;
         this.reseauSocial = reseauSocial;
         this.messagePosted = new HashMap<>();
+        this.monConsommateur = consommateur;
         assert invariant();
     }
  
@@ -58,7 +63,8 @@ public class Membre {
         return  pseudonymeMembre != null && !pseudonymeMembre.isBlank() && 
                reseauSocial != null 
                && messagePosted != null
-               && ((estModerateur == true) || (estModerateur == false));
+               && ((estModerateur == true) || (estModerateur == false))
+               && monConsommateur!=null;
     }
 
     /**
@@ -113,8 +119,12 @@ public class Membre {
         messagePosted.put(message.getId(), message);
     }
     
-
-
+    /**
+     * @return le consommateur du membre
+     */
+    public MonConsommateur getMonConsommateur() {
+    	return monConsommateur;
+    }
     // On a mi pseudonymeMembre dans le hashcode en supposant que pseudonymeMembre
     // est unique et invariant pour chaque reseau social (pour des raisons de simplicité)
 

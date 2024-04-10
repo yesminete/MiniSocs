@@ -32,19 +32,22 @@ return
 sys -> u ++: me = chercherMembre(pseudoMembre):membre
 return
 opt test && etat==Actif && me==m
-sys->m ++: Test = getEstModerateur()
+sys->r ++ : posterMessageDansunReseau(contenu,pseudo)
+return
+r->m ++: Test = getEstModerateur()
 return
 alt Test==True
 create "__mes:Message__" as mes
 sys-> mes ++: mes = create(contenu)
 return
 sys-> mes : setEtatMessage(VISIBLE)
-sys->u2 : notifieMembreReseau
+sys -> r ++: producteurMessagePoste()
+return 
 else
 create "__mes:Message__" as mes2
 sys->mes2 ++: mes = create(contenu)
+sys -> r++: producteurMessageEnAttente()
 return
-sys->u2 : notifieModerateur
 end
 end
 end

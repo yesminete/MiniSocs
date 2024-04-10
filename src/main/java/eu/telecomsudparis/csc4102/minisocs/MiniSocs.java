@@ -3,6 +3,7 @@ package eu.telecomsudparis.csc4102.minisocs;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDateTime;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
@@ -181,9 +182,13 @@ public class MiniSocs {
 		if (u.getEtatCompte().equals(EtatCompte.DESACTIVE)) {
 			throw new OperationImpossible("le compte est DESACTIVE");	
 		}
-		reseauxSociaux.put(nomReseau,new ReseauSocial(nomReseau,true));
-		reseauxSociaux.get(nomReseau).ajouterMembre(new Membre(pseudoMembre,true,reseauxSociaux.get(nomReseau)));
-        u.ajouterMembre(reseauxSociaux.get(nomReseau).getMembres().get(pseudoMembre));
+        MonConsommateur conso = new MonConsommateur (EtatStrategie.QUOTIDIEN);
+        r = new ReseauSocial(nomReseau,true);
+		reseauxSociaux.put(nomReseau,r);
+		r.ajouterMembre(new Membre(pseudoMembre,true,r,conso));
+        u.ajouterMembre(r.getMembres().get(pseudoMembre));
+        r.getProducteurMessageEnAttente().subscribe(conso);
+        r.getProducteurMessagePoste().subscribe(conso);
 		assert invariant();
 	}   
     
@@ -198,7 +203,7 @@ public class MiniSocs {
      * @throws OperationImpossible en cas de problèmes sur les pré-conditions.
      */
     
-	public void ajouterMembre(final String pseudoUtilisateurMod,final String pseudoModerateur, final String nomReseau, final String pseudoUtilisateur, final String pseudoMembre) 
+	public void ajouterMembre(final String pseudoUtilisateurMod,final String pseudoModerateur, final String nomReseau, final String pseudoUtilisateur, final String pseudoMembre, final String etatStrategie) 
 	throws OperationImpossible {
         if (pseudoUtilisateurMod == null || pseudoUtilisateurMod.isBlank()) {
 			throw new OperationImpossible("pseudo utilisateur ne peut pas être null ou vide");
@@ -215,6 +220,9 @@ public class MiniSocs {
 		if (pseudoModerateur == null || pseudoModerateur.isBlank()) {
 			throw new OperationImpossible("pseudo modérateur ne peut pas être null ou vide");
 		}
+        if(etatStrategie!="immédiat" && etatStrategie!="quotidien" && etatStrategie!="pas de notifications"){
+			throw new OperationImpossible("Le type ed stratégie doit etre soit 'immédiat' ou 'quotidien' ou 'pas de notifications'");
+        }
 		ReseauSocial r = reseauxSociaux.get(nomReseau);
 		if(r==null){
 			throw new OperationImpossible("le réseau social doit exister");
@@ -255,15 +263,17 @@ public class MiniSocs {
 				throw new OperationImpossible("L'utilisateur existe dans le réseau social sous un autre pseudo");	
 			}
 		}
-		nm = new Membre(pseudoMembre, false,r);
+        MonConsommateur conso = new MonConsommateur(EtatStrategie.fromNom(etatStrategie));
+		nm = new Membre(pseudoMembre, false,r,conso);
 		r.ajouterMembre(nm);
         u.ajouterMembre(nm);
+        r.getProducteurMessagePoste().subscribe(conso);         
 		assert invariant();
 	}
 
     
     public Long posterMessage(final String pseudoUtilisateur, final String contenu, final String pseudoMembre, final String nomReseau)
-			throws OperationImpossible {
+			throws OperationImpossible, InterruptedException{
 		
         if (pseudoUtilisateur == null || pseudoUtilisateur.isBlank()) {
 			throw new OperationImpossible("pseudo_membre ne peut pas être null ou vide");
@@ -306,13 +316,10 @@ public class MiniSocs {
 		//creer une instance de ce message avec l'etatMessage correspondnat 
 		
 		Message message=new Message(contenu);
-        if (m.estModerateur()) {
-            message.setEtatMessage(EtatMessage.VISIBLE);
-            // notifie membre du réseau
-		} 
-        // Notifications des moderateurs
         // retourner l'id message a celui qui a posté
-		r.ajouterMessage(message);
+
+        r.ajouterMessage(message);
+		r.posterMessageDansunReseau(message,pseudoMembre);
         assert invariant();
         return message.getId();
 	}
@@ -328,7 +335,7 @@ public class MiniSocs {
      * @throws OperationImpossible en cas de problème sur les pré-conditions.
      */
     public void modereMessage(final String pseudoModUtilisateur, final String pseudonymeModerateur, final String nomReseau, final Long idMessage, final boolean acceptation)
-            throws OperationImpossible {
+            throws OperationImpossible, InterruptedException{
         if (pseudoModUtilisateur == null || pseudoModUtilisateur.isBlank()) {
             throw new OperationImpossible("pseudonyme utilisateur ne peut pas être null ou vide");
         }        
@@ -380,6 +387,10 @@ public class MiniSocs {
             throw new OperationImpossible("Message deja modéré ");
         }
         mess.modererMessage(acceptation); 
+        
+        rs.getProducteurMessagePoste().submit(new Notification ("Nouveau message posté! Ce message est posté le :" + LocalDateTime.now()+ " -- "+ mess.getContenu() + "--"));
+        Thread.sleep(100);
+        
         assert invariant();
     }
     /**

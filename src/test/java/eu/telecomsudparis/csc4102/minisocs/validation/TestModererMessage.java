@@ -19,6 +19,7 @@ class TestModererMessage {
     private String pseudoMod;
     private String pseudoMembre;
     private String nomReseau;
+    private String etatStrategie;
     private Long  idMessage;
 
     @BeforeEach
@@ -28,10 +29,11 @@ class TestModererMessage {
         pseudoMembre = "membre";
         pseudoMod = "mod";
         nomReseau = "monReseau";
+        etatStrategie = "immédiat";
         assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoMod, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
         assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoMembre, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
 		assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoMod,pseudoMod,nomReseau), "Creation reseau a échoué");
-        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoMod,pseudoMod,nomReseau,pseudoMembre,pseudoMembre),"Ajout membre a échoué");
+        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoMod,pseudoMod,nomReseau,pseudoMembre,pseudoMembre,etatStrategie),"Ajout membre a échoué");
         assertDoesNotThrow(() -> idMessage = miniSocs.posterMessage(pseudoMembre,contenu,pseudoMembre,nomReseau),"Poster Message ne fonctionne pas");
     }
 
@@ -43,7 +45,7 @@ class TestModererMessage {
         pseudoMod = null;
         nomReseau =null;
         idMessage = null;
-
+        etatStrategie = null;
     }
     
     
@@ -149,7 +151,7 @@ class TestModererMessage {
     @Test
     void  modererMessageTest8Jeu1() throws Exception {
         assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoMembre, pseudoMembre, "newR"),"Création réseau a échoué");   
-        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoMembre,pseudoMembre,"newR",pseudoMod,pseudoMod),"Ajout membre a échoué"); 
+        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoMembre,pseudoMembre,"newR",pseudoMod,pseudoMod,etatStrategie),"Ajout membre a échoué"); 
         assertDoesNotThrow(() -> idMessage = miniSocs.posterMessage(pseudoMod,contenu,pseudoMod,"newR"),"Poster Message ne fonctionne pas");
         Assertions.assertThrows(OperationImpossible.class,
                 () -> miniSocs.modereMessage(pseudoMod,pseudoMod,nomReseau, idMessage, false));

@@ -1,13 +1,12 @@
 @startuml
-
 'Diagramme de cas d'utilisation (PlantUML)'
 
 'Configuration charte graphique'
 skinparam usecase {
-BackgroundColor White
-BorderColor Black
-ArrowColor Black
-ActorBackgroundColor<< Human >> Gold
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+    ActorBackgroundColor << Human >> Gold
 }
 
 left to right direction
@@ -17,26 +16,28 @@ actor Administrateur
 actor Utilisateur
 actor Membre
 actor Modérateur
-Modérateur <|-- Administrateur
-Utilisateur <|-- Membre
-Membre <|-- Modérateur
-
+Modérateur <-- Administrateur
+Utilisateur <-- Membre
+Membre <-- Modérateur
 
 'Déclaration des cas d'utilisation dans le système'
 rectangle "MiniSocs" {
-:Administrateur: -- (Ajouter un utilisateur)
-:Administrateur: -- (Lister les utilisateur)
-:Administrateur: -- (Bloquer un compte utilisateur)
-:Administrateur: --(Debloquer un compte utilisateur)
-:Administrateur: --(Retirer utilisateur)
-:Utilisateur:    -- (Désactiver son compte)
-:Utilisateur: --(Créer réseau social)
-:Utilisateur: --(Configurer compte)
-:Membre: --(Poster message)
-:Membre: --(Cacher message)
-:Modérateur: --(Ajouter membre)
-:Modérateur: --(Promouvoir membre)
-:Modérateur: --(Modérer les messages)
-:Utilisateur: --(Activer son compte)
+    Administrateur -- (Ajouter un utilisateur) : notificationConsumer
+    Administrateur -- (Lister les utilisateurs)
+    Administrateur -- (Bloquer un compte utilisateur)
+    Administrateur -- (Débloquer un compte utilisateur)
+    Administrateur -- (Retirer utilisateur)
+    
+    Utilisateur -- (Créer réseau social)
+    Utilisateur -- (Configurer compte)
+    Utilisateur -- (Activer son compte)
+    Utilisateur -- (Poster message) : notify >> Modérateur
+    
+    Membre -- (Poster message)
+    Membre -- (Cacher message)
+    Membre -- (Désactiver son compte)
+
+    Modérateur -- (Modérer les messages)
+}
 
 @enduml

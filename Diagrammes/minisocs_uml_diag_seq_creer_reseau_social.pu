@@ -1,40 +1,46 @@
 @startuml
+'Diagramme de séquence (PlantUML)'
 
-'Diagramme de séquence (PLantUML)'
-
-'configuration charte graphique'
+'Configuration charte graphique'
 hide footbox
-skinparam sequenceParticiantBackgroundColor White
-skinparam sequenceActorBachkgroundColor White
+skinparam sequenceParticipantBackgroundColor White
+skinparam sequenceActorBackgroundColor White
 
 'Déclaration des acteurs et des participants'
-actor "__:utilisateur__" as u
-participant "__:MiniSocs__" as m
-participant "__u:Utilisateur__" as ui
-u -> m ++: creerReseauSocial(pseudonymeUtilisateur,pseudonymeMembre,nomReseau)
-opt pseudonymeUtilisateur!= null && pseudonymeUtilisateur!=vide && pseudonymeMembre!= null && pseudonymeMembre!=vide && nomReseau!=null && nomReseau!=vide
-m -> m ++: r = chercherReseauSocial(nomReseau)
-return
-opt r==null
-m -> m ++: u = chercherUtilisateur(pseudonyme)
-return
-opt u!=null
-m-> ui ++ : etat == getEtatCompte()
-return
-opt etat==ACTIF
-create "__r:ReseauSocial__" as R
-m -> R++: r=creerReseauSocial(nomReseau,true)
-return
-create "__me:Membre__" as mem
-m ->mem ++ : me = creerMember(pseudonymeMembre,true,r)
-return
-m -> R++ : ajouterMembre(me)
-return
-m -> ui++ : ajouterMembre(me)
-return
+actor "--:utilisateur:--" as u
+participant "--:MiniSocs:--" as m
+participant "--:Utilisateur:--" as ui
+participant "--:ReseauSocial:--" as r
+participant "--:Membre:--" as me
+
+u -> m: creerReseauSocial(pseudonymeUtilisateur,pseudonymeMembre,nomReseau)
+alt pseudonymeUtilisateur!=null && pseudonymeUtilisateur!=vide && pseudonymeMembre!=null && pseudonymeMembre!=vide && nomReseau!=null && nomReseau!=vide
+    m -> m: r = chercherReseauSocial(nomReseau)
+    return
+    alt r==null
+        m -> ui: u = chercherUtilisateur(pseudonyme)
+        return
+        alt u!=null
+            ' Modification: getEtatCompte() is now called on MiniSocs'
+            m -> m: etat = getEtatCompte(u)
+            return
+            alt etat==ACTIF
+                create "--:ReseauSocial:--" as R
+                m -> R: r=creerReseauSocial(nomReseau,true)
+                return
+                m -> me: me = creerMembre(pseudonymeMembre,true,r)
+                return
+                ' Modification: ajouterMembre() is now shown as being initiated by MiniSocs'
+                m -> r: ajouterMembre(me)
+                return
+                ' User subscribes to the ReseauSocial's publisher'
+                ui -> r: souscrirePublisher()
+                r -> r: registerSubscriber(ui)
+                return
+            end
+        end
+    end
 end
-end
-end
-end
-return
+
 @enduml
+

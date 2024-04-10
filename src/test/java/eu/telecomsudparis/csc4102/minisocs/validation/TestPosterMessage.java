@@ -19,7 +19,7 @@ class TestPosterMessage {
     private String pseudoMembre;
     private String pseudoModerateur;
     private String pseudoUtilisateur;
-
+    private String etatStrategie;
     @BeforeEach
     void setUp() {
         miniSocs = new MiniSocs("MiniSocs");
@@ -29,10 +29,11 @@ class TestPosterMessage {
         pseudoUtilisateur = "uToAdd";
         pseudoMembre = "newMember";
         nomReseau = "r1";
+        etatStrategie = "immédiat";
 		assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoModerateur, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
         assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoUtilisateur, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
         assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoModerateur, pseudoModerateur, nomReseau), "creation reseau social a  échoué");
-        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoModerateur,pseudoModerateur, nomReseau, pseudoUtilisateur, pseudoMembre), "ajout membre a échoué");    
+        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoModerateur,pseudoModerateur, nomReseau, pseudoUtilisateur, pseudoMembre,etatStrategie), "ajout membre a échoué");    
     }
 
     @AfterEach
@@ -140,7 +141,7 @@ class TestPosterMessage {
     void posterMessageTest7Jeu2() throws Exception {
         assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoModerateur, pseudoModerateur, "newR"), "creation reseau social a  échoué");
         assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur("otherU", "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
-        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoModerateur,pseudoModerateur, "newR", "otherU", "otherM"), "ajout membre a échoué");     
+        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoModerateur,pseudoModerateur, "newR", "otherU", "otherM",etatStrategie), "ajout membre a échoué");     
         Assertions.assertThrows(OperationImpossible.class,
         () -> miniSocs.posterMessage("otherU",contenu,"otherM", nomReseau));    
     }

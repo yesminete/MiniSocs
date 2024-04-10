@@ -16,6 +16,7 @@ class TestFermerReseau {
     private String nomReseau;
     private String pseudoMod;
     private String pseudoMembre;
+    private String etatStrategie;
 
     @BeforeEach
     void setUp() {
@@ -23,10 +24,11 @@ class TestFermerReseau {
         pseudoMembre = "membre";
         pseudoMod = "mod";
         nomReseau = "monReseau";
+        etatStrategie = "immédiat";
         assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoMod, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
         assertDoesNotThrow(() -> miniSocs.ajouterUtilisateur(pseudoMembre, "n", "p", "nom.pren@som.fr"), "Ajout de l'utilisateur a échoué");
 		assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoMod,pseudoMod,nomReseau), "Creation reseau a échoué");
-        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoMod,pseudoMod,nomReseau,pseudoMembre,pseudoMembre),"Ajout membre a échoué");  
+        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoMod,pseudoMod,nomReseau,pseudoMembre,pseudoMembre,etatStrategie),"Ajout membre a échoué");  
     }
 
     @AfterEach

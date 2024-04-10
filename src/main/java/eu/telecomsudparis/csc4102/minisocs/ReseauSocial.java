@@ -1,9 +1,12 @@
 package eu.telecomsudparis.csc4102.minisocs;
 
 import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.SubmissionPublisher;
+import eu.telecomsudparis.csc4102.util.OperationImpossible;
 
 public class ReseauSocial {
     // Nom du réseau social
@@ -18,6 +21,14 @@ public class ReseauSocial {
     // Liste des messages du réseau social, indexés par leur identifiant
     private Map<Long, Message> messages;
     
+    //Producteur des notifications de messages en attente
+    
+    private SubmissionPublisher<Notification> producteurMessageEnAttente;
+    
+    //Producteur des notifcations de message postés
+    
+    private SubmissionPublisher<Notification> producteurMessagePoste;
+    
     // Constructeur du réseau social
     public ReseauSocial(String nom, boolean estOuvert) {
         if (nom == null || nom.isBlank()) {
@@ -27,7 +38,19 @@ public class ReseauSocial {
         this.estOuvert = estOuvert;
         this.membres = new HashMap<>();
         this.messages = new HashMap<>();
+        this.producteurMessageEnAttente = new SubmissionPublisher<>();
+        this.producteurMessagePoste = new SubmissionPublisher<>();
         assert invariant();
+    }
+    
+    public SubmissionPublisher<Notification> getProducteurMessageEnAttente()
+    {
+    	return producteurMessageEnAttente;
+    }
+    
+    public SubmissionPublisher<Notification> getProducteurMessagePoste()
+    {
+    	return producteurMessagePoste;
     }
 
     // Vérifie l'invariant du réseau social
@@ -70,8 +93,40 @@ public class ReseauSocial {
         membres.put(membre.getPseudonymeMembre(), membre);
         assert invariant();
     }
-
-    // Ajoute un message au réseau social
+    
+    /**
+     * crée un message et l'ajoute au réseau 
+     * @throws OperationImpossible 
+     * @throws InterruptedException 
+     */
+    public void posterMessageDansunReseau(final Message message, final String pseudoMembre) throws OperationImpossible, InterruptedException {
+        Membre m = membres.get(pseudoMembre);
+        if (m == null) {
+            throw new OperationImpossible("Membre avec ce pseudonyme (" + pseudoMembre + " ) n'existe pas. ");
+        }
+        
+        // associer un état au message en fonction de l'état du membre
+        if (m.estModerateur())
+        {
+            message.setEtatMessage(EtatMessage.VISIBLE);      
+            producteurMessagePoste.submit(new Notification("Nouveau message! posté le " + LocalDateTime.now() + " <<" + message.getContenu() + ">> " ));
+        } 
+        else 
+        {
+            producteurMessageEnAttente.submit(new Notification("Message en attente de modération! posté le " + LocalDateTime.now() + " <<" + message.getContenu() + ">> " ));            
+        }
+                
+        //creer une instance de ce message avec l'etatMessage correspondant 
+        ajouterMessage(message);
+        
+        //ajouter le message aux messages postés du membre
+        m.ajouterMessagePosted(message);
+        Thread.sleep(100);
+    }
+    
+    /**
+     * ajoute un message existant au réseau 
+     */
     public void ajouterMessage(Message message) {
         messages.put(message.getId(), message);
         assert invariant();
