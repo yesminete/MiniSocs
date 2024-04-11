@@ -5,12 +5,17 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Duration;
+
 
 /**
  * Cette classe définit le consommateur. Les notifications sont typées.
  * 
  * @author Denis Conan
  */
+
 public class MonConsommateur implements Subscriber<Notification> {
 
     /**
@@ -40,6 +45,7 @@ public class MonConsommateur implements Subscriber<Notification> {
         this.strategie = etatStrategie;   
   }
 
+
   @Override 
   public void onSubscribe(final Subscription souscription) {
     this.souscription = souscription;
@@ -52,7 +58,7 @@ public class MonConsommateur implements Subscriber<Notification> {
   @Override
   public void onNext(final Notification publication) {
       
-      Instant now = Instant.now();
+    
       
       switch (strategie) {
       case IMMEDIAT:
@@ -61,13 +67,22 @@ public class MonConsommateur implements Subscriber<Notification> {
           souscription.request(1); 
           break;
       case QUOTIDIEN:
-          if (lastMessageTime == null || ChronoUnit.DAYS.between(lastMessageTime, now) >= 1) {
-              // Il s'est écoulé un jour ou plus depuis le dernier message, ou aucun message n'a été reçu auparavant.
-              // reception d'une publication...
-              System.out.println("Consommateur a recu une nouvelle publication : " + publication);
-              souscription.request(1);
-              lastMessageTime = now;
-          } 
+          LocalDateTime now = LocalDateTime.now();
+          LocalDateTime midnight = now.toLocalDate().atTime(LocalTime.MAX);
+
+          // If it's already past midnight, sleep until next midnight
+          if (now.isAfter(midnight)) {
+              midnight = midnight.plusDays(1);
+          }
+
+          Duration duration = Duration.between(now, midnight);
+          long secondsToMidnight = duration.getSeconds();
+
+          try {
+              Thread.sleep(secondsToMidnight * 1000);
+          } catch (InterruptedException e) {
+              e.printStackTrace();
+          }
           break;
       case PASDENOTIF:
           // demander aucune notification
@@ -75,9 +90,9 @@ public class MonConsommateur implements Subscriber<Notification> {
           break;
       default:
           System.out.println("Stratégie de notification invalide.");
-  }
+  }}
       
-  }
+ 
 
   @Override
   public void onError(final Throwable throwable) { //...
