@@ -11,8 +11,10 @@ participant "__r:RéseauSocial__" as RS
 participant "__m:Member__" as mod
 participant "__u:Utilisateur__" as u
 participant "__modu:Utilisateur__" as modu
-m -> Mini ++: ajouterMembre(pseudoModUtilisateur,pseudonymeModerateur, nomReseauSocial,pseudonymeUtilisateur,pseudonymeMembre)
-opt pseudoModUtilisateur!=null && pseudoModUtilisateur!=vide && pseudonymeModerateur!=null && pseudonymeModerateur != vide && nomReseauSocial!=null && nomReseauSocial!=vide && pseudonymeUtilisateur!=null && pseudonymeUtilisateur!=vide && pseudonymeMembre!=null && pseudonymeMembre!=vide
+participant "__etat:EtatStartegie__" as etat
+
+m -> Mini ++: ajouterMembre(pseudoModUtilisateur,pseudonymeModerateur, nomReseauSocial,pseudonymeUtilisateur,pseudonymeMembre,etatStrategie)
+opt pseudoModUtilisateur!=null && pseudoModUtilisateur!=vide && pseudonymeModerateur!=null && pseudonymeModerateur != vide && nomReseauSocial!=null && nomReseauSocial!=vide && pseudonymeUtilisateur!=null && pseudonymeUtilisateur!=vide && pseudonymeMembre!=null && pseudonymeMembre!=vide && (etatStrategie=="immédiat" ou etatStrategie=="quotidien" ou etatStrategie=="pas de notifications"
 Mini -> Mini ++: r = chercherReseauSocial(nomReseauSocial): ReseauSocial
 return
 opt r!=null
@@ -23,12 +25,15 @@ Mini -> r ++: m = chercherMembre(pseudonymeModerateur): Membre
 return
 opt m!=null
  Mini -> Mini ++ : modu = chercherUtilisateur() 
+ alt modU!=null
  return
   Mini -> modu ++ : Etatmod = getEtat(modu)
  return
- Mini -> mod ++ : test2 = getEstModerateur(m):Boolean
+ Mini -> mod ++ : test2 = estModerateur(m):Boolean
  return
- opt test2==true && Etatmod == ACTIF
+ Mini -> modu ++ : me = chercherMembre(pseudoMembre) 
+ return 
+ opt test2==true && Etatmod == ACTIF && me==m
 Mini -> Mini ++ : u = chercherUtilisateur(pseudonymeUtilisateur) : Utilisateur
 return
 opt u!=null
@@ -38,17 +43,23 @@ opt u!=null
 opt etatU==actif 
 Mini -> r ++ : nm = chercherMembre(pseudonymeMembre) : Membre
 return
-   Mini -> r ++ : membres = getMembres() : collection<membre>
+   Mini -> u ++ : membres = getMembres() : collection<membre>
    return
-opt nm==null && u not in membres && r!= mm.getReseauSocial() for all mm : membres
+opt nm==null &&  r!= mm.getReseauSocial() for all mm : membres
+		   Mini -> etat ++ : etat = fromNom(etatStrategie) : EtatStartegie
+		   return
+		   create  "__MonConsommateur__" as conso
+		   Mini -> conso++: conso = MonConsommateur(etat) : MonConsommateur
+		   return
        	   create "__Membre__" as mem
-       	   Mini -> mem ++: creerMembre(pseudonymeMembre,false,r)
-	   return
+       	   Mini -> mem ++: Membre(pseudonymeMembre,false,r,conso)
+	   	   return
 	   Mini -> r ++: ajouterMembre(nm)
 	   return
 	   Mini -> u ++: ajouterMembre(nm)
 	   return
     end
+end
 end
 end
 end

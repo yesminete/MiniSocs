@@ -18,11 +18,11 @@ class ReseauSocial {
   -fermerReseau()
   -ajouterMembre(Membre)
   -ajouterMessage(Message)
+  -posterMessageDansUnReseau(Message message,String pseudoMembre)
 }
 
 
 class Utilisateur {
-  -id: Integer
   -nom: String
   -prenom: String
   -adresseMail: String
@@ -38,15 +38,17 @@ class Membre{
   -pseudoMembre : String
   -estModerateur : Bool
   -promouvoirMembre()
+  -ajouterMessagePosted(Message message)
 }
 
 class Message{
   -contenu: String
-  -statut: EtatMessage
+  -etatMessage: EtatMessage
   -id : Long
   -date : LocalDateTime
   -modererMessage()
   -cacherMessage()
+  -rendreVisibleMessage()
 }
 
 class MiniSoc{
@@ -59,11 +61,53 @@ enum EtatCompte <<enum>> {
   BLOQUÉ
 }
 
+enum EtatStrategie <<enum>> {
+  IMMEDIAT
+  QUOTIDIEN
+  PASDENOTIF
+}
+
+
 enum EtatMessage <<enum>>{
   ENATTENTE
   ACCEPTE
   REJETÉ
   CACHÉ
+}
+
+
+interface Publisher {
+  subscribe(Subscriber)
+  submit(P)
+}
+
+interface Subscription {
+  request(long n)
+  cancel()
+}
+
+interface Subscriber {
+  onSubscribe(Subscription)
+  onNext(P)
+  onError(Throwable)
+  onComplete()
+}
+
+class SubmissionPublisher {
+  BufferedSubscription[] buffer
+  submit(P)
+}
+
+interface BufferedSubscription{
+  doOffer(P)
+}
+
+class MonConsommateur{
+
+}
+
+class Notification{
+  -contenu:String
 }
 
 'Associations, etc.'
@@ -74,6 +118,13 @@ Utilisateur "1"-->"*" Membre : devenir
 Membre "1..*"--"1" ReseauSocial : associer à
 Membre "1"-->"..*" Message : poster
 ReseauSocial *--"..*" Message
+SubmissionPublisher -|> Publisher
+SubmissionPublisher "1" *-- "*" BufferedSubscription
+BufferedSubscription .down.> Subscription 
+MonConsommateur -|> Subscriber
+Membre -> MonConsommateur
+BufferedSubscription "1" -- "1" MonConsommateur : <<est attaché à>>
+
 
 
 'Au besoin, aides pour le positionnement'

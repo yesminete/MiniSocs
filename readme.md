@@ -96,13 +96,14 @@ priorité HAUTE.
 ∧ pseudo utilisateur à ajouter bien formé (non null ∧ non vide) \
 ∧ pseudo nouveau membre bien formé (non null ∧ non vide) \
 ∧ nom réseau bien formé (non null ∧ non vide) \
-∧ Le réseau existe ^le réseau est ouvert \
-∧ Le modérateur existe (posséde un compte sur MiniSoc) ∧  le compte du modérateur est actif ^ L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére ^ le compte modérateur correspond au compte utilisateur \
-∧ utilisateur(à ajouter) (existe ∧ le compte est actif ∧ n'est pas dans le réseau) \
+∧ Le réseau existe ^ le réseau est ouvert \
+∧ L'utilisateur(modérateur) existe (posséde un compte sur MiniSoc) ∧  son compte est actif ^ L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére ^ le compte modérateur correspond au compte utilisateur \
+∧ utilisateur(à ajouter) existe ∧ le compte est actif ∧ n'est pas dans le réseau sous un autre pseudo\
 ∧ Le pseudo de ce nouveau membre n'existe pas sur le réseau 
+∧ etat stratégie == "immédiat" ou "quotidien" ou "pas de notifications"
  
 - postcondition : \
-∧ membre créé et ajouté au réseau// Vérification qu'au moins un membre est modérateur.
+∧ consommateur et membre créé, membre ajouté au réseau et ajouté a la liste des membres de l'utilisateur
 
 #### Modérer les messages (HAUTE)
 
@@ -111,21 +112,21 @@ priorité HAUTE.
 ∧ pseudonymeModerateur!=null && pseudonymeModerateur!=vide\
 ∧ nomReseau !=null && nomReseau!=vide \
 ∧ idMessage!=null\
-∧ Le compte utilisateur du moderateur existe ^ actif ^ le profil modérateur correspond à cet utilisateur\
+∧ Le compte utilisateur (moderateur) existe ^ actif ^ le profil modérateur correspond à cet utilisateur\
 ∧ L'utilisateur a les droits de modération de ce réseau\
 ∧ réseau existe && reseau ouvert \
 ∧ Le message fait partie de ce réseau\
 ∧ message en attente de modération \
 - postcondition : \
-∧ Si le modérateur accepte le message il sera visible dans le réseau \
-∧ Sinon si le modérateur refuse le message, il aura le statut non accepté et reste non visible dans le réseau
+∧ Si le modérateur accepte le message, le message devient visible, message ajouté dans le réseau et notifications envoyées aux membres selon l'etat stratégie\
+∧ Sinon si le modérateur refuse le message, il aura le statut Rejeté et reste non visible dans le réseau
 
 #### Poster Message (HAUTE)
 - précondition : \
 ∧ pseudonomUtilisateur != null && pseudonomUtilisateur!=vide \
 ∧ pseudonomMembre != null && pseudonomMembe!=vide \
 ∧ nomReseau!=null && nomRéseau!=vide \
-∧ utilisateur exite et Le compte de l'utilisateur est ACTIF\
+∧ utilisateur exite, le compte de l'utilisateur est ACTIF et le compte membre correspond au compte utilisateur \
 ∧ reseau existe et non ferme/
 ∧ contenu non null ∧ contenu non vide \
 ∧ l'utilisateur est membre de ce reseau \
@@ -199,20 +200,21 @@ conditions.
 | nombre de tests dans le jeu de tests     | 2 | 1 | 1 | 1 |
 
 #### Ajouter membre (HAUTE)
-|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
-|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|
-| pseudo utilisateur bien formé (non null ∧ non vide)  | F | T | T | T | T | T | T | T | T | T | T |
-| pseudo moderateur bien formé (non null ∧ non vide)  |   | F | T | T | T | T | T | T | T | T | T |
-| pseudo utilisateur à ajouter bien formé (non null ∧ non vide)  |  |  | F | T | T | T | T | T | T | T | T | T |
-| pseudo nouveau membre bien formé (non null ∧ non vide)  |   |   |   | F | T | T | T | T | T | T | T |
-| nom réseau bien formé (non null ∧ non vide)   |   |   |  |  | F | T | T | T | T | T | T |
-| Le réseau existe ^le réseau est ouvert |   |   |   |    |  |  F | T | T | T | T | T |
-| Le modérateur posséde un compte actif sur MiniSoc ^ le compte modérateur correspond au utilisateur |   |   |   |   |   |  | F | T | T | T | T |
-| L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére  |   |   |   |   |  |  |  | F | T | T | T |
-| utilisateur(à ajouter) (existe ∧ le compte est actif ∧ n'est pas dans le réseau) |   |   |   |   |   |    |   |  | F | T | T |
-|Le pseudo de ce nouveau membre n'existe pas sur le réseau     |   |   |   |   |   |    |   |  |  | F | T |
-|   membre créé et ajouté au réseau et ajouté a la liste des membres de l'utilisateur | F  | F  | F  | F  | F  | F  | F  | F  |  F | F | T |
- nombre de test dans le jeu de test | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 3 | 4 | 1 | 1 |
+|                                          | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+|:-----------------------------------------|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|
+| pseudo utilisateur bien formé (non null ∧ non vide)  | F | T | T | T | T | T | T | T | T | T | T | T |
+| pseudo moderateur bien formé (non null ∧ non vide)  |   | F | T | T | T | T | T | T | T | T | T | T |
+| pseudo utilisateur à ajouter bien formé (non null ∧ non vide)  |  |  | F | T | T | T | T | T | T | T | T | T | T |
+| pseudo nouveau membre bien formé (non null ∧ non vide)  |   |   |   | F | T | T | T | T | T | T | T | T |
+| nom réseau bien formé (non null ∧ non vide)   |   |   |  |  | F | T | T | T | T | T | T | T |
+| Le réseau existe ^le réseau est ouvert |   |   |   |    |  |  F | T | T | T | T | T | T |
+| L'utilisateur (modérateur) posséde un compte actif sur MiniSoc ^ le compte modérateur correspond au utilisateur |   |   |   |   |   |  | F | T | T | T | T | T |
+| L'ajout se fait par un modérateur ^ l'ajout se fait dans un réseau social qui le modére  |   |   |   |   |  |  |  | F | T | T | T | T |
+| utilisateur(à ajouter) (existe ∧ le compte est actif ∧ n'est pas dans le réseau) |   |   |   |   |   |    |   |  | F | T | T | T |
+|Le pseudo de ce nouveau membre n'existe pas sur le réseau     |   |   |   |   |   |    |   |  |  | F | T | T |
+|etatStratégie == "immédiat" ou  "quotidien" ou "pas de notifications"  |   |   |   |   |   |    |   |  |  |   | F | T |
+|   consommateur et membre créé, membre ajouté au réseau et ajouté a la liste des membres de l'utilisateur | F  | F  | F  | F  | F  | F  | F  | F  |  F | F | F | T |
+ nombre de test dans le jeu de test | 2 | 2 | 2 | 2 | 2 | 2 | 4 | 2 | 4 | 1 | 1 | 1 |
 
 #### Modérer les messages (HAUTE)
 
@@ -228,7 +230,7 @@ conditions.
 |Le message fait partie de ce réseau       |   |   |   |   |   |   |   | F | T | T | T |
 |message en attente de modération          |   |   |   |   |   |   |   |   | F | T | T |
 |message accepté                           |   |   |   |   |   |   |   |   |   | F | T |
-| message visible et ajouté dans le réseau | F | F | F | F | F | F | F | F | F | F | T |
+| message visible, ajouté dans le réseau et notifications envoyés aux membres selon l'etat stratégie| F | F | F | F | F | F | F | F | F | F | T |
 | message rejeté                           | F | F | F | F | F | F | F | F | F | T | F |
 | nombre de tests dans le jeu de tests     | 2 | 2 | 2 | 1 | 4 | 2 | 2 | 2 | 3 | 1 | 1 |
 

@@ -234,7 +234,10 @@ public class MiniSocs {
 		if(mod==null){
 			throw new OperationImpossible("l'utilisateur doit appartenir à ce réseau social("+nomReseau+")");
 		}
-        Utilisateur modU = utilisateurs.get(pseudoUtilisateurMod);   
+        Utilisateur modU = utilisateurs.get(pseudoUtilisateurMod);  
+        if(modU==null) {
+            throw new OperationImpossible("l'utilisateur (modérateur) doit avoir une compte sur le réseau");
+        }
 		if(!modU.getEtatCompte().equals(EtatCompte.ACTIF)){
 			throw new OperationImpossible("l'utilisateur doit avoir un compte actif");
 		}
@@ -318,7 +321,6 @@ public class MiniSocs {
 		Message message=new Message(contenu);
         // retourner l'id message a celui qui a posté
 
-        r.ajouterMessage(message);
 		r.posterMessageDansunReseau(message,pseudoMembre);
         assert invariant();
         return message.getId();
@@ -388,7 +390,9 @@ public class MiniSocs {
         }
         mess.modererMessage(acceptation); 
         
-        rs.getProducteurMessagePoste().submit(new Notification ("Nouveau message posté! Ce message est posté le :" + LocalDateTime.now()+ " -- "+ mess.getContenu() + "--"));
+        if(acceptation) {
+            rs.getProducteurMessagePoste().submit(new Notification ("Nouveau message posté! Ce message est posté le :" + LocalDateTime.now()+ " -- "+ mess.getContenu() + "--"));
+        }
         Thread.sleep(100);
         
         assert invariant();

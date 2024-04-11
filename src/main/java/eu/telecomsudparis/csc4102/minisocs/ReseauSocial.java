@@ -121,6 +121,7 @@ public class ReseauSocial {
         
         //ajouter le message aux messages postés du membre
         m.ajouterMessagePosted(message);
+        
         Thread.sleep(100);
     }
     

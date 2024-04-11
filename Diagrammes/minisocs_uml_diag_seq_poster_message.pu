@@ -13,6 +13,10 @@ participant "__m:MiniSocs__" as sys
 participant "__r:reseauSocial__" as r
 participant "__me:Member__" as m
 participant "__u:Utilisateur__" as u
+participant "__producteurMessageEnAttente:SubmissionPublisher<Notification>__" as po
+participant "__producteurMessagePoste:SubmissionPublisher<Notification>__" as pp 
+participant "__u:Utilisateur__" as u
+
 actor "u2:utilisateur" as u2
 'Interaction principale'
 
@@ -32,24 +36,30 @@ return
 sys -> u ++: me = chercherMembre(pseudoMembre):membre
 return
 opt test && etat==Actif && me==m
-sys->r ++ : posterMessageDansunReseau(contenu,pseudo)
-return
-r->m ++: Test = getEstModerateur()
-return
-alt Test==True
 create "__mes:Message__" as mes
 sys-> mes ++: mes = create(contenu)
 return
-sys-> mes : setEtatMessage(VISIBLE)
-sys -> r ++: producteurMessagePoste()
+
+sys->r ++ : posterMessageDansunReseau(message,pseudo)
+r->m ++: Test = estModerateur()
+return
+alt Test==True
+r-> mes : setEtatMessage(VISIBLE)
+create "__:Notification__" as no
+r-> no ++: no = create(contenu)
+return
+r -> pp ++: submit(no)
 return 
 else
-create "__mes:Message__" as mes2
-sys->mes2 ++: mes = create(contenu)
-sys -> r++: producteurMessageEnAttente()
+create "__:Notification__" as no
+r-> no ++: no = create(contenu)
+return
+r -> po ++: submit(no)
+return 
+end
 return
 end
 end
 end
-end
+return
 @enduml

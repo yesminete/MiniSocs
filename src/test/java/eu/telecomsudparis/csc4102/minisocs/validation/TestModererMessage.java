@@ -150,9 +150,9 @@ class TestModererMessage {
     
     @Test
     void  modererMessageTest8Jeu1() throws Exception {
-        assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoMembre, pseudoMembre, "newR"),"Création réseau a échoué");   
-        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoMembre,pseudoMembre,"newR",pseudoMod,pseudoMod,etatStrategie),"Ajout membre a échoué"); 
-        assertDoesNotThrow(() -> idMessage = miniSocs.posterMessage(pseudoMod,contenu,pseudoMod,"newR"),"Poster Message ne fonctionne pas");
+        assertDoesNotThrow(() -> miniSocs.creerReseauSocial(pseudoMod, pseudoMod, "newR"),"Création réseau a échoué");   
+        assertDoesNotThrow(() -> miniSocs.ajouterMembre(pseudoMod,pseudoMod,"newR",pseudoMembre,pseudoMembre,etatStrategie),"Ajout membre a échoué"); 
+        assertDoesNotThrow(() -> idMessage = miniSocs.posterMessage(pseudoMembre,contenu,pseudoMembre,"newR"),"Poster Message ne fonctionne pas");
         Assertions.assertThrows(OperationImpossible.class,
                 () -> miniSocs.modereMessage(pseudoMod,pseudoMod,nomReseau, idMessage, false));
     }
