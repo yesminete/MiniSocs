@@ -2,7 +2,6 @@
 package eu.telecomsudparis.csc4102.minisocs;
 
 import java.util.HashMap;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,11 +23,11 @@ public class ReseauSocial {
     
     //Producteur des notifications de messages en attente
     
-    private SubmissionPublisher<Notification> producteurMessageEnAttente;
+    private SubmissionPublisher<Message> producteurMessageEnAttente;
     
     //Producteur des notifcations de message postés
     
-    private SubmissionPublisher<Notification> producteurMessagePoste;
+    private SubmissionPublisher<Message> producteurMessagePoste;
     
     // Constructeur du réseau social
     public ReseauSocial(String nom, boolean estOuvert) {
@@ -44,12 +43,12 @@ public class ReseauSocial {
         assert invariant();
     }
     
-    public SubmissionPublisher<Notification> getProducteurMessageEnAttente()
+    public SubmissionPublisher<Message> getProducteurMessageEnAttente()
     {
     	return producteurMessageEnAttente;
     }
     
-    public SubmissionPublisher<Notification> getProducteurMessagePoste()
+    public SubmissionPublisher<Message> getProducteurMessagePoste()
     {
     	return producteurMessagePoste;
     }
@@ -110,11 +109,11 @@ public class ReseauSocial {
         if (m.estModerateur())
         {
             message.setEtatMessage(EtatMessage.VISIBLE);      
-            producteurMessagePoste.submit(new Notification("Nouveau message! posté le " + LocalDateTime.now() + " <<" + message.getContenu() + ">> " ));
+            producteurMessagePoste.submit(message);
         } 
         else 
         {
-            producteurMessageEnAttente.submit(new Notification("Message en attente de modération! posté le " + LocalDateTime.now() + " <<" + message.getContenu() + ">> " ));            
+            producteurMessageEnAttente.submit(message);            
         }
                 
         //creer une instance de ce message avec l'etatMessage correspondant 

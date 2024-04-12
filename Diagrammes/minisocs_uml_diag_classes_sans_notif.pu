@@ -53,6 +53,12 @@ class Message{
 
 class MiniSoc{
 -nomDuSysteme:String
+-ajouterUtilisateur(String,String,String,String)
+-creerReseauSocial(String,String,String) 
+-ajouterMembre(String,String, String,String,String,String) 
+-posterMessage(Strig,String,String,String):Long
+-modereMessage(String,String,String,Long,boolean)
+-fermerReseau (String,String,String)
 }
 
 enum EtatCompte <<enum>> {
@@ -78,36 +84,33 @@ enum EtatMessage <<enum>>{
 
 interface Publisher {
   subscribe(Subscriber)
-  submit(P)
+  submit(Message)
 }
 
 interface Subscription {
-  request(long n)
+  request(Long)
   cancel()
 }
 
 interface Subscriber {
   onSubscribe(Subscription)
-  onNext(P)
+  onNext(Message)
   onError(Throwable)
   onComplete()
 }
 
 class SubmissionPublisher {
   BufferedSubscription[] buffer
-  submit(P)
+  submit(Message)
 }
 
 interface BufferedSubscription{
-  doOffer(P)
+  doOffer(Message)
 }
 
 class MonConsommateur{
-
-}
-
-class Notification{
-  -contenu:String
+  -souscription: Subscription
+  -strategie: EtatStrategie  
 }
 
 'Associations, etc.'

@@ -13,8 +13,8 @@ participant "__m:MiniSocs__" as sys
 participant "__r:reseauSocial__" as r
 participant "__me:Member__" as m
 participant "__u:Utilisateur__" as u
-participant "__producteurMessageEnAttente:SubmissionPublisher<Notification>__" as po
-participant "__producteurMessagePoste:SubmissionPublisher<Notification>__" as pp 
+participant "__producteurMessageEnAttente:SubmissionPublisher<Message>__" as po
+participant "__producteurMessagePoste:SubmissionPublisher<Message>__" as pp 
 participant "__u:Utilisateur__" as u
 
 actor "u2:utilisateur" as u2
@@ -45,16 +45,10 @@ r->m ++: Test = estModerateur()
 return
 alt Test==True
 r-> mes : setEtatMessage(VISIBLE)
-create "__:Notification__" as no
-r-> no ++: no = create(contenu)
-return
-r -> pp ++: submit(no)
+r -> pp ++: submit(mes)
 return 
 else
-create "__:Notification__" as no
-r-> no ++: no = create(contenu)
-return
-r -> po ++: submit(no)
+r -> po ++: submit(mes)
 return 
 end
 return

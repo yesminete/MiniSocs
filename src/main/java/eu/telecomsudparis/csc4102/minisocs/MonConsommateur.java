@@ -1,8 +1,6 @@
 //CHECKSTYLE:OFF 
 package eu.telecomsudparis.csc4102.minisocs;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
 import java.time.LocalDateTime;
@@ -16,7 +14,7 @@ import java.time.Duration;
  * @author Denis Conan
  */
 
-public class MonConsommateur implements Subscriber<Notification> {
+public class MonConsommateur implements Subscriber<Message> {
 
     /**
      * la souscription. Cet objet sert a controler le flux entre le producteur et le
@@ -27,13 +25,7 @@ public class MonConsommateur implements Subscriber<Notification> {
     /**
      * la strategie de reception de messages.
      */
-    private EtatStrategie strategie;
-    
-    /**
-     * instant du dernier message posté.
-     */
-    private Instant lastMessageTime = null;
-     
+    private EtatStrategie strategie;     
  
   // on pourrait ajouter une collection pour garder les publications recues
 
@@ -56,7 +48,7 @@ public class MonConsommateur implements Subscriber<Notification> {
   }
 
   @Override
-  public void onNext(final Notification publication) {
+  public void onNext(final Message publication) {
       
     
       

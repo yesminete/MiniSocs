@@ -85,18 +85,27 @@ public class Message {
   }
 
 
+  /**
+   * @return l'id du message.
+   */
   public long getId() {
     return id;
   }
     
 
+  /**
+   * @return l'id du dernier message ajouté
+   */
   public long getLastIdUsed() {
     return lastIDused;
   }
 
     
 
-  public void setEtatMessage(EtatMessage etat) {
+  /**
+   * @param etat l'état du message
+   */
+  public void setEtatMessage(final EtatMessage etat) {
     etatMessage = etat;
   }
     
@@ -108,7 +117,7 @@ public class Message {
    false si le message est refusé
    */
 
-  public void modererMessage(boolean acceptation) { 
+  public void modererMessage(final boolean acceptation) { 
     if (etatMessage == EtatMessage.ENATTENTE)  { 
       if (acceptation) {
         setEtatMessage(EtatMessage.VISIBLE);         
@@ -137,7 +146,7 @@ public class Message {
     
   public void rendreVisibleMessage() {
     if (getEtatMessage() == EtatMessage.CACHÉ) { 
-      setEtatMessage(EtatMessage.VISIBLE);;
+      setEtatMessage(EtatMessage.VISIBLE);
     }   
   }
 

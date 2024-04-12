@@ -7,40 +7,48 @@ skinparam sequenceParticipantBackgroundColor White
 skinparam sequenceActorBackgroundColor White
 
 'Déclaration des acteurs et des participants'
-actor "--:utilisateur:--" as u
-participant "--:MiniSocs:--" as m
-participant "--:Utilisateur:--" as ui
-participant "--:ReseauSocial:--" as r
-participant "--:Membre:--" as me
+actor "__:utilisateur:__" as u
+participant "__:MiniSocs:__" as m
+participant "__:Utilisateur:__" as ui
+participant "__r:ReseauSocial:__" as r
+participant "__:Membre:__" as me
+participant "__:ProducteurMessageEnAttente:__" as pa
+participant "__:ProducteurMessagePoste:__" as pp
 
-u -> m: creerReseauSocial(pseudonymeUtilisateur,pseudonymeMembre,nomReseau)
+u -> m++: creerReseauSocial(pseudonymeUtilisateur,pseudonymeMembre,nomReseau)
 alt pseudonymeUtilisateur!=null && pseudonymeUtilisateur!=vide && pseudonymeMembre!=null && pseudonymeMembre!=vide && nomReseau!=null && nomReseau!=vide
-    m -> m: r = chercherReseauSocial(nomReseau)
+    m -> m++: r = chercherReseauSocial(nomReseau)
     return
     alt r==null
-        m -> ui: u = chercherUtilisateur(pseudonyme)
+        m -> m++: u = chercherUtilisateur(pseudonyme)
         return
         alt u!=null
             ' Modification: getEtatCompte() is now called on MiniSocs'
-            m -> m: etat = getEtatCompte(u)
+            m -> ui++: etat = getEtatCompte(u)
             return
             alt etat==ACTIF
-                create "--:ReseauSocial:--" as R
-                m -> R: r=creerReseauSocial(nomReseau,true)
+                create "__:ReseauSocial:__" as R
+                m -> R++: r=create(nomReseau,true)
                 return
-                m -> me: me = creerMembre(pseudonymeMembre,true,r)
+                create "__:MonConsommateur:__" as mon
+                m->mon++: conso = create(ETATSTRATEGIE.IMMEDIAT)
                 return
-                ' Modification: ajouterMembre() is now shown as being initiated by MiniSocs'
-                m -> r: ajouterMembre(me)
+                m -> me++: me = creerMembre(pseudonymeMembre,true,r,conso)
                 return
-                ' User subscribes to the ReseauSocial's publisher'
-                ui -> r: souscrirePublisher()
-                r -> r: registerSubscriber(ui)
+                m -> r++: ajouterMembre(me)
+                return
+                ui -> r++: pa = getProducteurMessageEnAttente()
+                r->pa++ : subscribe(conso)
+                return
+                return
+                ui -> r++ : pp = getProducteurMessageEnAttente()
+                r -> pp++: subscribe(conso)
+                return
                 return
             end
         end
     end
 end
-
+return
 @enduml
 
